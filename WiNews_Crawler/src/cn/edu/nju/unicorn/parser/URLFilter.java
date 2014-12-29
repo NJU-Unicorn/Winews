@@ -12,7 +12,7 @@ public class URLFilter {
 	public URLFilter() {
 	}
 
-	public void addFilterRegex(String regex) {
+	public void addRemoveRegex(String regex) {
 		Pattern p = Pattern.compile(regex);
 		filterList.add(p);
 	}
@@ -22,7 +22,14 @@ public class URLFilter {
 		matchList.add(p);
 	}
 
+	// 如果字符串符合规则或不符合去除规则就会返回true
 	public boolean filter(String s) {
+		for (Pattern p : matchList) {
+			Matcher m = p.matcher(s);
+			if (m.find()) {
+				return true;
+			}
+		}
 		for (Pattern p : filterList) {
 			Matcher m = p.matcher(s);
 			if (m.find()) {
@@ -32,16 +39,14 @@ public class URLFilter {
 		return true;
 	}
 
+	// 如果字符串符合规则或不符合去除规则就会留下
 	public ArrayList<String> filter(ArrayList<String> list) {
-		for (Pattern p : filterList) {
 			for (int i = 0; i < list.size(); i++) {
-				Matcher m = p.matcher(list.get(i));
-				if (m.find()) {
+				if (!filter(list.get(i))) {
 					list.remove(i);
 					i--;
 				}
 			}
-		}
 		return list;
 	}
 }

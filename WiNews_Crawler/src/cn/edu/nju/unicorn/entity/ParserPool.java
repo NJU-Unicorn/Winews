@@ -16,7 +16,7 @@ public class ParserPool {
 		return instance == null ? instance = new ParserPool() : instance;
 	}
 
-	public synchronized void registeThread(Thread t) {
+	public synchronized void registerThread(Thread t) {
 		while(l.size() > threadLimits) {
 			try {
 				Thread.sleep(1000);

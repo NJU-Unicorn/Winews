@@ -22,6 +22,7 @@ public class Crawler {
 	private int depth = DEFAULT_DEPTH;
 	private int timeout = DEFAULT_TIMEOUT;
 	private int emptyWait = DEFAULT_EMPTYWAIT;
+	private boolean shieldExternal = false;
 
 	public Crawler() {
 		pPool = ParserPool.getInstance();
@@ -49,9 +50,13 @@ public class Crawler {
 	public void setEmptyWait(int emptyWait) {
 		this.emptyWait = emptyWait;
 	}
+
+	public void setUrlFilter(URLFilter filter) {
+		this.urlFilter = filter;
+	}
 	
-	public void addUrlFilter(String regex) {
-		urlFilter.addFilterRegex(regex);
+	public void shieldExternalUrl(boolean flag) {
+		this.shieldExternal = flag;
 	}
 
 	/**
@@ -59,7 +64,7 @@ public class Crawler {
 	 */
 	public void start() {
 		while (true) {
-			if (urlSet.isEmpty()) {		// 如果没有找到URL，则等待1秒
+			if (urlSet.isEmpty()) { // 如果没有找到URL，则等待1秒
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -78,20 +83,22 @@ public class Crawler {
 					return;
 				}
 				// 获取Document
+				System.out.println("Fetching: " + u);
 				try {
 					final Document doc = Jsoup.parse(u, timeout);
 					// 新建线程处理Document
 					Thread t = new Thread(new Runnable() {
 						@Override
 						public void run() {
-							MainParser p = new MainParser(doc,urlFilter);
+							MainParser p = new MainParser(doc, urlFilter);
+							p.shieldExternalUrl(shieldExternal);
 							p.process();
 						}
 					});
-					pPool.registeThread(t);
+					pPool.registerThread(t);
 					t.start();
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.err.println("Error: " + e.getMessage());
 					continue;
 				}
 			}

@@ -18,10 +18,12 @@ public class URLSet {
 	}
 
 	public void addUrl(URL u) {
-		if(!hasFetched.contains(u.toString())) {
-			waitForFetching.add(u);
-		} else {
+		if(hasFetched.contains(u.toString())) {
 			System.out.println("This url has already fetched.");
+		} else if(waitForFetching.contains(u)) {
+			System.out.println("This url waiting for fetcing.");
+		} else {
+			waitForFetching.add(u);
 		}
 		
 	}
