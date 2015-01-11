@@ -1,62 +1,70 @@
 package cn.edu.nju.unicorn.handler;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import cn.edu.nju.unicorn.entity.EmptySetException;
-import cn.edu.nju.unicorn.entity.ParserPool;
-import cn.edu.nju.unicorn.entity.URLSet;
+import cn.edu.nju.unicorn.data.EmptySetException;
+import cn.edu.nju.unicorn.data.ParserPool;
+import cn.edu.nju.unicorn.data.URLSet;
 import cn.edu.nju.unicorn.parser.MainParser;
-import cn.edu.nju.unicorn.parser.URLFilter;
 
 public class Crawler {
-	public static final int DEFAULT_DEPTH = 3;
 	public static final int DEFAULT_TIMEOUT = 5000;
-	public static final int DEFAULT_EMPTYWAIT = 1000;
 	private URLSet urlSet;
 	private ParserPool pPool;
-	private URLFilter urlFilter = new URLFilter();
-	private int depth = DEFAULT_DEPTH;
 	private int timeout = DEFAULT_TIMEOUT;
-	private int emptyWait = DEFAULT_EMPTYWAIT;
-	private boolean shieldExternal = false;
+	private boolean domainLimit = false;
+
+	private ArrayList<String> newsPageUrlRegex = new ArrayList<String>();
+	private ArrayList<String> skipUrlRegex = new ArrayList<String>();
 
 	public Crawler() {
 		pPool = ParserPool.getInstance();
 		urlSet = URLSet.getInstance();
 	}
 
-	public Crawler(URL base) {
+	public Crawler(Properties prop) {
 		pPool = ParserPool.getInstance();
 		urlSet = URLSet.getInstance();
-		urlSet.addUrl(base);
+		urlSet.addUrl(prop.getProperty("root"));
+		domainLimit = Boolean.valueOf(prop.getProperty("domain_limit",true+""));
+		timeout = Integer.parseInt(prop.getProperty("read_timeout",DEFAULT_TIMEOUT+""));
+		String[] newsPageRegex = prop.getProperty("news_page_regex").split(
+				"&&&");
+		for (int i = 0; i < newsPageRegex.length; i++) {
+			newsPageUrlRegex.add(newsPageRegex[i]);
+		}
+		String[] skipRegex = prop.getProperty("skip_url_regex").split("&&&");
+		for (int i = 0; i < skipRegex.length; i++) {
+			skipUrlRegex.add(skipRegex[i]);
+		}
 	}
 
-	public void addBaseURL(URL base) {
-		urlSet.addUrl(base);
+	private boolean isSkippedUrl(String url) {
+		for (String s : skipUrlRegex) {
+			if (Pattern.matches(s, url)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	public void setDepth(int depth) {
-		this.depth = depth;
-	}
-
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
-	}
-
-	public void setEmptyWait(int emptyWait) {
-		this.emptyWait = emptyWait;
-	}
-
-	public void setUrlFilter(URLFilter filter) {
-		this.urlFilter = filter;
-	}
-	
-	public void shieldExternalUrl(boolean flag) {
-		this.shieldExternal = flag;
+	private boolean isNewsPageUrl(String url) {
+		for (String s : newsPageUrlRegex) {
+			if (Pattern.matches(s, url)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -78,25 +86,66 @@ public class Crawler {
 				} catch (EmptySetException e) {
 					e.printStackTrace();
 					return;
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
 				}
 				if (u == null) {
 					return;
 				}
 				// 获取Document
-				System.out.println("Fetching: " + u);
+				// System.out.println("Fetching: " + u);
 				try {
 					final Document doc = Jsoup.parse(u, timeout);
-					// 新建线程处理Document
-					Thread t = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							MainParser p = new MainParser(doc, urlFilter);
-							p.shieldExternalUrl(shieldExternal);
-							p.process();
+
+					// 获取其中的链接
+					Elements urlElements = doc.select("a");
+					URL baseUrl;
+					String startUrl = "";
+					String sameParentUrl = "";
+					try {
+						baseUrl = new URL(doc.baseUri());
+						startUrl = baseUrl.getProtocol() + "://"
+								+ baseUrl.getHost();
+						String[] absPathSp = u.toString().replace(startUrl, "")
+								.split("/");
+						sameParentUrl += startUrl;
+						for (int i = 0; i < absPathSp.length - 1; i++) {
+							sameParentUrl += absPathSp[i] + "/";
 						}
-					});
-					pPool.registerThread(t);
-					t.start();
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					}
+					for (Element e : urlElements) {
+						String newUrl = e.attr("href");
+						if (newUrl.startsWith("/")) {
+							newUrl = startUrl + newUrl;
+						} else if (!newUrl.startsWith("http://")) {
+							newUrl = sameParentUrl + newUrl;
+						}
+						if (!isSkippedUrl(newUrl)) { // 如果该url不需要跳过
+							if (domainLimit) { // 屏蔽外部站点
+								if (newUrl.startsWith(startUrl)) {
+									URLSet.getInstance().addUrl(newUrl);
+								}
+							} else {
+								URLSet.getInstance().addUrl(newUrl);
+							}
+						}
+					}
+
+					// 如果是包含新闻的链接，新建线程处理Document
+					if (isNewsPageUrl(u.toString())) {
+						System.out.println("正在处理：" + u);
+						Thread t = new Thread(new Runnable() {
+							@Override
+							public void run() {
+								MainParser p = new MainParser(doc);
+								p.process();
+							}
+						});
+						pPool.registerThread(t);
+						t.start();
+					}
 				} catch (IOException e) {
 					System.err.println("Error: " + e.getMessage());
 					continue;

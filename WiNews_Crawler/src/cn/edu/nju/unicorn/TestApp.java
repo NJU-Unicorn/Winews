@@ -1,24 +1,28 @@
 package cn.edu.nju.unicorn;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
 
 import cn.edu.nju.unicorn.handler.Crawler;
-import cn.edu.nju.unicorn.parser.URLFilter;
 
 public class TestApp {
 	public static void main(String[] args) {
+		Crawler c = new Crawler(readProperties("conf/bjrb.properties"));
+		c.start();
+	}
+
+	public static Properties readProperties(String filePath) {
+		Properties props = new Properties();
 		try {
-			Crawler c = new Crawler(new URL("http://wxppt.me/blog/"));
-			URLFilter filter = new URLFilter();
-			filter.addRemoveRegex(".*#.*");
-			c.setUrlFilter(filter);
-			c.setTimeout(10000);
-			c.shieldExternalUrl(true);
-			c.start();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
+			InputStream in = new BufferedInputStream(new FileInputStream(
+					filePath));
+			props.load(in);
+			return props;
+		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package cn.edu.nju.unicorn.entity;
+package cn.edu.nju.unicorn.data;
 
 import java.util.ArrayList;
 
