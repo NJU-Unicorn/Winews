@@ -82,7 +82,13 @@ public abstract class WiHandler {
 		HashSet<URL> urlSet = urlFilter.filter(doc.baseUri(), links);
 		for (URL link : urlSet) {
 			// Check URL
-			if (!DATE_SET.contains(getDateFromLink(link.toString()).toString())) {
+			String dateStr;
+			try {
+				dateStr = getDateFromLink(link.toString()).toString();
+			} catch (Exception e1) {
+				continue;
+			}
+			if (!DATE_SET.contains(dateStr)) {
 				if (!URL_SET.contains(link)) {
 					URL_SET.add(link);
 					if (Pattern.matches(nodeUrlPattern, link.toString())) {
@@ -104,7 +110,6 @@ public abstract class WiHandler {
 							e.printStackTrace();
 							continue;
 						}
-						// TODO
 						if (!news.getTitle().equals("")) {
 							save(news);
 						}
@@ -128,7 +133,7 @@ public abstract class WiHandler {
 			Date date = df.parse(dateStr);
 			return new WiDate(date);
 		} else {
-			throw new ParseException("在日期中找不到相应的Pattern", 0);
+			throw new ParseException("在日期中找不到相应的Pattern: " + s, 0);
 		}
 	}
 
@@ -165,7 +170,7 @@ public abstract class WiHandler {
 			throw new ConfigException("Congif file is incomplete!");
 		}
 		try {
-			endDate = new WiDate(endDateStr,"yyyy-MM-dd");
+			endDate = new WiDate(endDateStr, "yyyy-MM-dd");
 		} catch (ParseException e) {
 			throw new ConfigException("Congif date parse error!");
 		}
