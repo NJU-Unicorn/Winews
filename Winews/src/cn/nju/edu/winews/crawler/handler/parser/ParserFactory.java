@@ -19,6 +19,8 @@ public class ParserFactory {
 				return new TjrbContentPageParser();
 			case "newspaper.jfdaily.com":
 				return new JfrbContentPageParser();
+			case "cqrbepaper.cqnews.net":
+				return new CqrbContentPageParser();
 			default:
 				System.out.println("Niconiconi!");
 				throw new ParserException("Can't recognize the host: "
