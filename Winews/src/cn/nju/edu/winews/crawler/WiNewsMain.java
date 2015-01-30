@@ -10,7 +10,7 @@ public class WiNewsMain {
 		new Thread(new Runnable() {
 			public void run() {
 				TjrbHandler handler = new TjrbHandler();
-				handler.start(new WiDate(2014, 3, 1));
+				handler.start(new WiDate(2014, 3, 11));
 			}
 		}).start();
 //		new Thread(new Runnable() {

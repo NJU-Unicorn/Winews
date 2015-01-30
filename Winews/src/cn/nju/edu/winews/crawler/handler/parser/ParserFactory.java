@@ -14,13 +14,13 @@ public class ParserFactory {
 		if (type.equals(ParserType.CONTENT_PAGE_PARSER)) {
 			switch (hostName) {
 			case "bjrb.bjd.com.cn":
-				return new BjrbContentPageParser();
+				return new BjrbParser();
 			case "epaper.tianjinwe.com":
-				return new TjrbContentPageParser();
+				return new TjrbParser();
 			case "newspaper.jfdaily.com":
-				return new JfrbContentPageParser();
+				return new JfrbParser();
 			case "cqrbepaper.cqnews.net":
-				return new CqrbContentPageParser();
+				return new CqrbParser();
 			default:
 				System.out.println("Niconiconi!");
 				throw new ParserException("Can't recognize the host: "
@@ -29,7 +29,7 @@ public class ParserFactory {
 		} else if (type.equals(ParserType.OLD_CONTENT_PAGE_PARSER)) {
 			switch (hostName) {
 			case "epaper.tianjinwe.com":
-				return new OldTjrbContentPageParser();
+				return new OldTjrbParser();
 			default:
 				System.out.println("Niconiconi!");
 				throw new ParserException("Can't recognize the host: "

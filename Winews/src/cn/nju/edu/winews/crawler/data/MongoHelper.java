@@ -21,7 +21,8 @@ public class MongoHelper {
 
 	public MongoHelper() throws Exception {
 		try {
-			client = new MongoClient("121.40.127.177", 18017);
+//			client = new MongoClient("121.40.127.177", 18017);
+			client = new MongoClient("localhost", 27017);
 		} catch (Exception e) {
 			throw e;
 		}

@@ -14,7 +14,7 @@ import cn.nju.edu.winews.crawler.entity.WiNews;
 import cn.nju.edu.winews.crawler.entity.WiNewsPicture;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
 
-public class BjrbContentPageParser implements WiParser {
+public class BjrbParser implements WiParser {
 	private static final String sourceID = "bjrb";
 	private static final int timeoutMillis = 5000;
 
