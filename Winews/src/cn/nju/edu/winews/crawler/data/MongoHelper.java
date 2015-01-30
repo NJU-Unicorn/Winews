@@ -21,7 +21,7 @@ public class MongoHelper {
 
 	public MongoHelper() throws Exception {
 		try {
-			client = new MongoClient("localhost", 27017);
+			client = new MongoClient("121.40.127.177", 18017);
 		} catch (Exception e) {
 			throw e;
 		}
@@ -34,7 +34,7 @@ public class MongoHelper {
 		return coll.findOne(dbObj) != null;
 	}
 
-	public void addNews(WiNews news) throws MongoIOException {
+	public synchronized void addNews(WiNews news) throws MongoIOException {
 		DBCollection coll = db.getCollection(news.getSourceID());
 		// if there is no reference Collection
 		if (!db.getCollectionNames().contains(news.getSourceID())) {
