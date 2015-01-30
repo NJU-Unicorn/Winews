@@ -35,6 +35,7 @@ public abstract class WiHandler {
 	public static final String END_DATE_KEY = "end_date";
 	public static final int DEFAULT_TIMEOUT_MILLIS = 5000;
 	public static final String UNKNOWN_VALUE = "NULL";
+	public static final int MAX_DEPTH = 2;
 
 	protected String sourceID = "";
 	protected HashSet<URL> URL_SET = new HashSet<URL>();
@@ -64,7 +65,7 @@ public abstract class WiHandler {
 				break;
 			}
 			try {
-				getLinks(url);
+				getLinks(url,0);
 			} catch (Exception e) {
 				e.printStackTrace();
 				continue;
@@ -72,10 +73,18 @@ public abstract class WiHandler {
 			URL_SET.clear();
 			DATE_SET.add(date.toString());
 			date.toLastDay();
+			// sleep a random time
+			try {
+				Thread.sleep((int)Math.random()*2000);
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 
-	public void getLinks(URL url) throws Exception {
+	public void getLinks(URL url,int depth) throws Exception {
+		if(depth>MAX_DEPTH) {
+			return;
+		}
 		Document doc = Jsoup.parse(url, timeoutMillis);
 		Elements links = doc.getElementsByTag("a");
 		WiUrlFilter urlFilter = new WiUrlFilter();
@@ -94,7 +103,7 @@ public abstract class WiHandler {
 					if (Pattern.matches(nodeUrlPattern, link.toString())) {
 						try {
 							System.out.println("Node Link: " + link);
-							getLinks(link);
+							getLinks(link,depth++);
 						} catch (Exception e) {
 							e.printStackTrace();
 							continue;

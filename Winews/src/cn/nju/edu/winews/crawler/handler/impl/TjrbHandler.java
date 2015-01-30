@@ -26,7 +26,10 @@ public class TjrbHandler extends WiHandler {
 	}
 
 	@Override
-	public void getLinks(URL url) throws Exception {
+	public void getLinks(URL url,int depth) throws Exception {
+		if(depth>MAX_DEPTH) {
+			return;
+		}
 		Document doc = Jsoup.parse(url, timeoutMillis);
 		Elements links = doc.getElementsByTag("a");
 		WiUrlFilter urlFilter = new WiUrlFilter();
@@ -44,7 +47,7 @@ public class TjrbHandler extends WiHandler {
 					URL_SET.add(link);
 					if (Pattern.matches(nodeUrlPattern, link.toString())) {
 						try {
-							getLinks(link);
+							getLinks(link,depth++);
 						} catch (Exception e) {
 							e.printStackTrace();
 							continue;
