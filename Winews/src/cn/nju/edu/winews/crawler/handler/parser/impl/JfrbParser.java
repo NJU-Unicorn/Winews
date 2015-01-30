@@ -3,11 +3,6 @@ package cn.nju.edu.winews.crawler.handler.parser.impl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,7 +25,7 @@ public class JfrbParser implements WiParser {
 			throw new ParserException("Jsoup error: " + e1.getMessage());
 		}
 		WiNews news = new WiNews();
-		news.setId(getId(url.toString()));
+		news.setId(CommonParser.getId(sourceID, url.toString()));
 		news.setUrl(url);
 		news.setSourceID(sourceID);
 		news.setSource("解放日报");
@@ -42,7 +37,7 @@ public class JfrbParser implements WiParser {
 		news.setSubTitle(subTitle.trim());
 		String dateAndTitle = doc.select(".title h5").text();
 		String[] datSp = dateAndTitle.split(" ");
-		news.setDate(formatDate(datSp[0].trim()));
+		news.setDate(CommonParser.formatDate("yyyy年MM月dd日",datSp[0].trim()));
 		news.setLayout(datSp[1].trim().replace(" ", ""));
 		
 		news.appendContent(doc.select(".content").html().replace("&nbsp;", "").replace("<br>", "").replaceAll("　", "").trim());
@@ -72,29 +67,5 @@ public class JfrbParser implements WiParser {
 			news.addPicture(pic);
 		}
 		return news;
-	}
-	
-	private String formatDate(String date) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-		try {
-			Date d = sdf.parse(date);
-			sdf = new SimpleDateFormat("yyyy年MM月dd日 E");
-			return sdf.format(d);
-		} catch (ParseException e) {
-			return date;
-		}
-	}
-
-	private String getId(String urlStr) {
-		String[] urlSp = urlStr.split("/");
-		String fileName = urlSp[urlSp.length - 1].split("\\.")[0];
-		Matcher m = Pattern.compile("[0-9]+").matcher(fileName);
-		if (m.find()) {
-			String id = sourceID + "_" + m.group();
-			return id;
-		} else {
-			throw new ParserException("Can't find the id of news url: "
-					+ urlStr);
-		}
 	}
 }

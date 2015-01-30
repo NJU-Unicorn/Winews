@@ -3,8 +3,6 @@ package cn.nju.edu.winews.crawler.handler.parser.impl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,7 +25,7 @@ public class TjrbParser implements WiParser {
 			throw new ParserException("Jsoup error: " + e1.getMessage());
 		}
 		WiNews news = new WiNews();
-		news.setId(getId(url.toString()));
+		news.setId(CommonParser.getId(sourceID, url.toString()));
 		news.setUrl(url);
 		news.setSourceID(sourceID);
 		news.setSource("天津日报");
@@ -70,18 +68,5 @@ public class TjrbParser implements WiParser {
 			news.addPicture(pic);
 		}
 		return news;
-	}
-
-	private String getId(String urlStr) {
-		String[] urlSp = urlStr.split("/");
-		String fileName = urlSp[urlSp.length - 1].split("\\.")[0];
-		Matcher m = Pattern.compile("[0-9]+").matcher(fileName);
-		if (m.find()) {
-			String id = sourceID + "_" + m.group();
-			return id;
-		} else {
-			throw new ParserException("Can't find the id of news url: "
-					+ urlStr);
-		}
 	}
 }

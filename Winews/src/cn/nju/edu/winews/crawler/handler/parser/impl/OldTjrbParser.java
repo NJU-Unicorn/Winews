@@ -30,7 +30,7 @@ public class OldTjrbParser implements WiParser {
 			throw new ParserException("Jsoup error: " + e1.getMessage());
 		}
 		WiNews news = new WiNews();
-		news.setId(getId(url.toString()));
+		news.setId(CommonParser.getId(sourceID, url.toString()));
 		news.setUrl(url);
 		news.setSourceID(sourceID);
 		news.setSource("天津日报");
@@ -92,16 +92,4 @@ public class OldTjrbParser implements WiParser {
 		return news;
 	}
 
-	private String getId(String urlStr) {
-		String[] urlSp = urlStr.split("/");
-		String fileName = urlSp[urlSp.length - 1].split("\\.")[0];
-		Matcher m = Pattern.compile("[0-9]+").matcher(fileName);
-		if (m.find()) {
-			String id = sourceID + "_" + m.group();
-			return id;
-		} else {
-			throw new ParserException("Can't find the id of news url: "
-					+ urlStr);
-		}
-	}
 }

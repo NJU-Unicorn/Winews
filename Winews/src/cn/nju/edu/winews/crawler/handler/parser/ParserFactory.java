@@ -5,6 +5,7 @@ import java.net.URL;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
 import cn.nju.edu.winews.crawler.handler.parser.impl.BjrbParser;
 import cn.nju.edu.winews.crawler.handler.parser.impl.CqrbParser;
+import cn.nju.edu.winews.crawler.handler.parser.impl.HbrbParser;
 import cn.nju.edu.winews.crawler.handler.parser.impl.JfrbParser;
 import cn.nju.edu.winews.crawler.handler.parser.impl.OldTjrbParser;
 import cn.nju.edu.winews.crawler.handler.parser.impl.TjrbParser;
@@ -26,6 +27,8 @@ public class ParserFactory {
 				return new JfrbParser();
 			case "cqrbepaper.cqnews.net":
 				return new CqrbParser();
+			case "hbrb.hebnews.cn":
+				return new HbrbParser();
 			default:
 				System.out.println("Niconiconi!");
 				throw new ParserException("Can't recognize the host: "
