@@ -13,8 +13,8 @@ import cn.nju.edu.winews.crawler.entity.WiNewsPicture;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
 import cn.nju.edu.winews.crawler.handler.parser.WiParser;
 
-public class HbrbParser implements WiParser {
-	private static final String sourceID = "hbrb";
+public class HnrbParser implements WiParser {
+	private static final String sourceID = "hnrb";
 	private static final int timeoutMillis = 5000;
 
 	public WiNews parse(URL url) {
@@ -28,15 +28,15 @@ public class HbrbParser implements WiParser {
 		news.setId(CommonParser.getId(sourceID, url.toString()));
 		news.setUrl(url);
 		news.setSourceID(sourceID);
-		news.setSource("河北日报");
-		news.setTitle(doc.select("td[width=572]>strong").text().trim());
+		news.setSource("河南日报");
+		news.setTitle(doc.select(".font01").text().trim());
 		String subTitle = "";
-		for(Element e: doc.select("td[width=572]>span")) {
+		for(Element e: doc.select(".font02")) {
 			subTitle += e.text().trim() + " ";
 		}
 		news.setSubTitle(subTitle.trim());
-		news.setLayout(doc.select(".epaper_title").text().trim());
-		news.setDate(CommonParser.formatDate("yyyy年MM月DD日", doc.select(".time").text()));
+		news.setLayout(doc.select("td[width=160]").text().trim());
+		news.setDate(CommonParser.formatDate("yyyy年MM月DD日", doc.select(".dSearch>strong").text()));
 		for (Element e : doc.select("#ozoom p")) {
 			String line = e.text().trim().replaceAll("^ *", "")
 					.replaceAll(" *$", "")
@@ -45,7 +45,7 @@ public class HbrbParser implements WiParser {
 				news.appendContent(line);
 			}
 		}
-		for (Element e : doc.select("#main table[bgcolor=#FFFFFF] table")) {
+		for (Element e : doc.select(".dContents img")) {
 			String[] urlSp = url.toString().split("/");
 			String rootUrl = url.toString()
 					.replace(urlSp[urlSp.length - 1], "");
@@ -64,17 +64,22 @@ public class HbrbParser implements WiParser {
 				throw new ParserException("URL create error: "
 						+ e1.getMessage());
 			}
-			pic.setComment(e.text().trim().replaceAll("^ *", "")
-					.replaceAll(" *$", ""));
-			System.out.println("Picture Link: " + picAbsUrl +"("+pic.getComment()+")");
+			if(doc.select(".dContents img").indexOf(e) == 0) {
+				pic.setComment(doc.select(".dContents>p").text().trim().replaceAll("^ *", "")
+						.replaceAll(" *$", ""));
+			} else {
+				pic.setComment(doc.select(".picdes").get(doc.select(".dContents img").indexOf(e)).text().trim().replaceAll("^ *", "")
+						.replaceAll(" *$", ""));
+			}
+			System.out.println("Picture Link: " + picAbsUrl + "("+pic.getComment()+")");
 			news.addPicture(pic);
 		}
 		return news;
 	}
-
 	
 	public static void main(String[] args) throws MalformedURLException {
-		WiNews news = new HbrbParser().parse(new URL("http://hbrb.hebnews.cn/html/2014-01/01/content_9022.htm"));
+		WiNews news = new HnrbParser().parse(new URL("http://newpaper.dahe.cn/hnrb/html/2015-01/30/content_1219014.htm?div=1"));
 		System.out.println(news);
 	}
+
 }

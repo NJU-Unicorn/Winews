@@ -17,7 +17,7 @@ public class WiUrlFilter {
 			return set;
 		}
 		for (Element element : elements) {
-			String u = element.attr("href");
+			String u = element.attr("href").split("\\?")[0];
 			if (isEligible(u)) {
 				URL url = null;
 				try {

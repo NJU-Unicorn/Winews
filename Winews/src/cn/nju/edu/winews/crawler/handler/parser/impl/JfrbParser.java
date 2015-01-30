@@ -68,4 +68,9 @@ public class JfrbParser implements WiParser {
 		}
 		return news;
 	}
+	
+	public static void main(String[] args) throws MalformedURLException {
+		WiNews news = new JfrbParser().parse(new URL("http://newspaper.jfdaily.com/jfrb/html/2014-07/31/content_1180610.htm"));
+		System.out.println(news);
+	}
 }

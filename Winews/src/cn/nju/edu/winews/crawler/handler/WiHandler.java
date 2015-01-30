@@ -93,6 +93,7 @@ public abstract class WiHandler {
 					URL_SET.add(link);
 					if (Pattern.matches(nodeUrlPattern, link.toString())) {
 						try {
+							System.out.println("Node Link: " + link);
 							getLinks(link);
 						} catch (Exception e) {
 							e.printStackTrace();
