@@ -35,7 +35,7 @@ public abstract class WiHandler {
 	public static final String END_DATE_KEY = "end_date";
 	public static final int DEFAULT_TIMEOUT_MILLIS = 5000;
 	public static final String UNKNOWN_VALUE = "NULL";
-	public static final int MAX_DEPTH = 2;
+	public static final int MAX_DEPTH = 3;
 
 	protected String sourceID = "";
 	protected HashSet<URL> URL_SET = new HashSet<URL>();
