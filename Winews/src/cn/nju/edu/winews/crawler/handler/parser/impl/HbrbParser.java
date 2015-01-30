@@ -36,7 +36,7 @@ public class HbrbParser implements WiParser {
 		}
 		news.setSubTitle(subTitle.trim());
 		news.setLayout(doc.select("td[width=208]").text().trim());
-		news.setDate(doc.select("td[width=268]").text().replace(" ", "").replace("　", " ").trim());
+		news.setDate(CommonParser.formatDate("", doc.select(".time").text()));
 		for (Element e : doc.select("#ozoom p")) {
 			String line = e.text().trim().replaceAll("^ *", "")
 					.replaceAll(" *$", "")
