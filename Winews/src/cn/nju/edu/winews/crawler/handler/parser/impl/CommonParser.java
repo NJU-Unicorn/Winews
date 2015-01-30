@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
 
 public class CommonParser {
-	static String getId(String sourceID,String urlStr) {
+	public static String getId(String sourceID,String urlStr) {
 		String[] urlSp = urlStr.split("/");
 		String fileName = urlSp[urlSp.length - 1].split("\\.")[0];
 		Matcher m = Pattern.compile("[0-9]+").matcher(fileName);
@@ -23,7 +23,7 @@ public class CommonParser {
 
 	}
 	
-	static String formatDate(String oldPattern, String date) {
+	public static String formatDate(String oldPattern, String date) {
 		SimpleDateFormat sdf = new SimpleDateFormat(oldPattern);
 		try {
 			Date d = sdf.parse(date);
