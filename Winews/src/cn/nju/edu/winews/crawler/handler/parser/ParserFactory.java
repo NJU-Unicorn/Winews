@@ -3,6 +3,11 @@ package cn.nju.edu.winews.crawler.handler.parser;
 import java.net.URL;
 
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
+import cn.nju.edu.winews.crawler.handler.parser.impl.BjrbParser;
+import cn.nju.edu.winews.crawler.handler.parser.impl.CqrbParser;
+import cn.nju.edu.winews.crawler.handler.parser.impl.JfrbParser;
+import cn.nju.edu.winews.crawler.handler.parser.impl.OldTjrbParser;
+import cn.nju.edu.winews.crawler.handler.parser.impl.TjrbParser;
 
 public class ParserFactory {
 	public static enum ParserType {

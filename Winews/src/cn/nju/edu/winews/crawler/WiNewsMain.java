@@ -1,9 +1,9 @@
 package cn.nju.edu.winews.crawler;
 
 import cn.nju.edu.winews.crawler.entity.WiDate;
-import cn.nju.edu.winews.crawler.handler.CqrbHandler;
-import cn.nju.edu.winews.crawler.handler.JfrbHandler;
-import cn.nju.edu.winews.crawler.handler.TjrbHandler;
+import cn.nju.edu.winews.crawler.handler.impl.CqrbHandler;
+import cn.nju.edu.winews.crawler.handler.impl.JfrbHandler;
+import cn.nju.edu.winews.crawler.handler.impl.TjrbHandler;
 
 public class WiNewsMain {
 	public static void main(String[] args) {

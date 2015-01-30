@@ -1,4 +1,4 @@
-package cn.nju.edu.winews.crawler.handler;
+package cn.nju.edu.winews.crawler.handler.impl;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 
 import cn.nju.edu.winews.crawler.entity.WiDate;
 import cn.nju.edu.winews.crawler.entity.WiNews;
+import cn.nju.edu.winews.crawler.handler.WiHandler;
 import cn.nju.edu.winews.crawler.handler.filter.WiUrlFilter;
 import cn.nju.edu.winews.crawler.handler.parser.ParserFactory;
 import cn.nju.edu.winews.crawler.handler.parser.ParserFactory.ParserType;
