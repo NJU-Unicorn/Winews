@@ -44,7 +44,7 @@ public class XizangrbParser implements WiParser{
 		news.setSubTitle(subTitle.trim());
 		news.setLayout(doc.select("td[width=145]").text().trim());
 		news.setDate(doc.select("span.default").text().replace(" ", "").replace("　", " ").trim());
-		for (Element e : doc.select("p#page_a")) {
+		for (Element e : doc.select("div#ozoom p")) {
 			String line = e.text().trim().replaceAll("^ *", "")
 					.replaceAll(" *$", "")
 					+ "\n";
@@ -52,7 +52,7 @@ public class XizangrbParser implements WiParser{
 				news.appendContent(line);
 			}
 		}
-		for (Element e : doc.select("div#frameContent div[align=center]")) {
+		for (Element e : doc.select("table[bgcolor=#efefef] table")) {
 			String[] urlSp = url.toString().split("/");
 			String rootUrl = url.toString()
 					.replace(urlSp[urlSp.length - 1], "");
