@@ -47,6 +47,7 @@ public abstract class WiHandler {
 	protected String rootUrlFormat;
 	protected String dateFormat;
 	protected WiDate endDate;
+	protected WiDate curDate;
 
 	public WiHandler(String sourceID) {
 		this.sourceID = sourceID;
@@ -60,6 +61,7 @@ public abstract class WiHandler {
 	public synchronized void start(WiDate date) {
 		loadConf();
 		while (!date.before(endDate)) {
+			curDate = date;
 			String rootUrlStr = date.fillDate(dateFormat, rootUrlFormat);
 			URL url;
 			try {
@@ -95,9 +97,6 @@ public abstract class WiHandler {
 
 	public void getLinks(URL url, int depth) throws Exception {
 		WiDate curDate = getDateFromLink(url.toString());
-//		if (depth > MAX_DEPTH) {
-//			return;
-//		}
 		Document doc = Jsoup.parse(url, timeoutMillis);
 		Elements links = doc.getElementsByTag("a");
 		links.addAll(doc.getElementsByTag("area"));

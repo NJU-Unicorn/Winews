@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class WiNews {
-	private String id;
 	private URL url;
 	private String title;
 	private String subTitle;
@@ -14,21 +13,6 @@ public class WiNews {
 	private String layout;
 	private String content = "";
 	private ArrayList<WiNewsPicture> pictures = new ArrayList<WiNewsPicture>();
-
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the url
@@ -182,7 +166,7 @@ public class WiNews {
 	}
 
 	public String toString() {
-		return "ID = " + id + "\n《" + title + " —— " + subTitle + "》\r\n"
+		return "《" + title + " —— " + subTitle + "》\r\n"
 				+ "来源：" + source + "\t\t版面：" + layout + "\t\t时间：" + date
 				+ "\r\n" + "地址：" + url + "\r\n" + content;
 	}

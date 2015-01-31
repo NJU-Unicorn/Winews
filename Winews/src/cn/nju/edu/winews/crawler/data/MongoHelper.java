@@ -64,7 +64,7 @@ public class MongoHelper {
 
 	public boolean existsNews(WiNews news) {
 		DBCollection coll = db.getCollection(news.getSourceID());
-		BasicDBObject dbObj = new BasicDBObject("news_id", news.getId());
+		BasicDBObject dbObj = new BasicDBObject("url", news.getUrl());
 		return coll.findOne(dbObj) != null;
 	}
 
@@ -74,10 +74,10 @@ public class MongoHelper {
 		if (!db.getCollectionNames().contains(news.getSourceID())) {
 			db.createCollection(news.getSourceID(), new BasicDBObject());
 			coll = db.getCollection(news.getSourceID());
-			coll.createIndex(new BasicDBObject("news_id", 1),
-					new BasicDBObject("unique", true).append("name", "news_id"));
+			coll.createIndex(new BasicDBObject("url", 1),
+					new BasicDBObject("unique", true).append("name", "url"));
 		}
-		if (coll.findOne(new BasicDBObject("news_id", news.getId())) != null) {
+		if (coll.findOne(new BasicDBObject("url", news.getUrl())) != null) {
 			System.out.println("News already in the database.");
 			return;
 		}
@@ -88,37 +88,8 @@ public class MongoHelper {
 		}
 	}
 
-	public WiNews getNews(String sourceID, String id) {
-		DBCollection coll = db.getCollection(sourceID);
-		DBObject obj = coll.findOne(new BasicDBObject("news_id", id));
-		if (obj != null) {
-			WiNews result = null;
-			try {
-				result = DBObject2News(obj);
-			} catch (MalformedURLException e) {
-				// impossible
-				System.err.println("URL Read Error");
-			}
-			return result;
-		}
-		return null;
-	}
-
-	public void removeNews(String sourceID, String id) {
-		DBCollection coll = db.getCollection(sourceID);
-		coll.remove(new BasicDBObject("news_id", id));
-	}
-
-	public void updateNews(WiNews news) {
-		DBCollection coll = db.getCollection(news.getSourceID());
-		coll.remove(new BasicDBObject("news_id", news.getId()));
-		coll.findOne(new BasicDBObject("news_id", news.getId()));
-		coll.save(news2DBObject(news));
-	}
-
 	private WiNews DBObject2News(DBObject o) throws MalformedURLException {
 		WiNews news = new WiNews();
-		news.setId(o.get("news_id").toString());
 		news.setContent(o.get("content").toString());
 		news.setDate(o.get("date").toString());
 		news.setLayout(o.get("layout").toString());
@@ -129,7 +100,7 @@ public class MongoHelper {
 		for (Object listObj : ((BasicDBList) o.get("pictures"))) {
 			DBObject dbListObj = (DBObject) listObj;
 			WiNewsPicture pic = new WiNewsPicture();
-			pic.setNewsId(news.getId());
+			pic.setNewsUrl(news.getUrl());
 			pic.setUrl(new URL(dbListObj.get("url").toString()));
 			pic.setComment(dbListObj.get("comment").toString());
 			news.addPicture(pic);
@@ -139,7 +110,6 @@ public class MongoHelper {
 
 	private DBObject news2DBObject(WiNews news) {
 		DBObject o = new BasicDBObject();
-		o.put("news_id", news.getId());
 		o.put("url", news.getUrl().toString());
 		o.put("date", news.getDate());
 		o.put("layout", news.getLayout());

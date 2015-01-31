@@ -11,6 +11,7 @@ import cn.nju.edu.winews.crawler.handler.parser.impl.HenanrbParser;
 import cn.nju.edu.winews.crawler.handler.parser.impl.JfrbParser;
 import cn.nju.edu.winews.crawler.handler.parser.impl.OldTjrbParser;
 import cn.nju.edu.winews.crawler.handler.parser.impl.TjrbParser;
+import cn.nju.edu.winews.crawler.handler.parser.impl.XinjiangrbParser;
 
 public class ParserFactory {
 	private static HashMap<String, SimpleWiParser> map = new HashMap<String, SimpleWiParser>();
@@ -29,6 +30,12 @@ public class ParserFactory {
 			return "黑龙江日报";
 		case "hainanrb":
 			return "海南日报";
+		case "hunanrb":
+			return "湖南日报";
+		case "anhuirb":
+			return "安徽日报";
+		case "dazhongrb":
+			return "大众日报";
 		default:
 			throw new ParserException("Can't recognize the sourceID: "
 					+ sourceID);
@@ -59,6 +66,8 @@ public class ParserFactory {
 				return new HbrbParser();
 			case "newpaper.dahe.cn":
 				return new HenanrbParser();
+			case "epaper.xjdaily.com":
+				return new XinjiangrbParser();
 			default:
 				System.out.println("Niconiconi!");
 				throw new ParserException("Can't recognize the host: "

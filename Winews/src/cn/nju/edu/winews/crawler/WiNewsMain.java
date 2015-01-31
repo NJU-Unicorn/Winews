@@ -6,10 +6,10 @@ import cn.nju.edu.winews.crawler.entity.WiDate;
 import cn.nju.edu.winews.crawler.handler.SimpleWiHandler;
 import cn.nju.edu.winews.crawler.handler.WiHandler;
 import cn.nju.edu.winews.crawler.handler.impl.CqrbHandler;
-import cn.nju.edu.winews.crawler.handler.impl.HainanrbHandler;
 import cn.nju.edu.winews.crawler.handler.impl.HbrbHandler;
 import cn.nju.edu.winews.crawler.handler.impl.HenanrbHandler;
 import cn.nju.edu.winews.crawler.handler.impl.JfrbHandler;
+import cn.nju.edu.winews.crawler.handler.impl.XinjiangrbHandler;
 
 public class WiNewsMain {
 	public static void main(String[] args) {
@@ -27,26 +27,12 @@ public class WiNewsMain {
 		case "henanrb":
 			handler = new HenanrbHandler();
 			break;
-		case "ynrb":
-			handler = new SimpleWiHandler("ynrb");
-			break;
-		case "lnrb":
-			handler = new SimpleWiHandler("lnrb");
-			break;
-		case "hljrb":
-			handler = new SimpleWiHandler("hljrb");
-			break;
-		case "hainanrb":
-			handler = new SimpleWiHandler("hainanrb");
+		case "xinjiangrb":
+			handler = new XinjiangrbHandler();
 			break;
 		default:
-			return;
+			handler = new SimpleWiHandler(args[0]);
 		}
-		if(args.length!=1) {
-			handler.start(new WiDate(Integer.parseInt(args[1]), Integer
-					.parseInt(args[2]), Integer.parseInt(args[3])));
-		} else {
-			handler.start(new WiDate(new Date()));
-		}
+		handler.start(new WiDate(new Date()));
 	}
 }

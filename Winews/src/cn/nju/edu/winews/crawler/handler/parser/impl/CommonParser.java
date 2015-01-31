@@ -11,22 +11,6 @@ import cn.nju.edu.winews.crawler.entity.WiDate;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
 
 public class CommonParser {
-	public static String getId(String sourceID,String urlStr) {
-		String[] urlSp = urlStr.split("/");
-		String fileName = urlSp[urlSp.length - 1].split("\\.")[0];
-		Matcher m = Pattern.compile("[0-9]+").matcher(fileName);
-		String id = new String(sourceID) + "_";
-		while (m.find()) {
-			id += m.group();
-		} 
-
-		if(id.equals(sourceID + "_")){
-			throw new ParserException("Can't find the id of news url: "
-					+ urlStr);
-		}
-		return id;
-	}
-	
 	public static String formatDate(String oldPattern, String date) {
 		SimpleDateFormat sdf = new SimpleDateFormat(oldPattern);
 		try {

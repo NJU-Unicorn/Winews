@@ -56,7 +56,6 @@ public class SimpleWiParser implements WiParser {
 			throw new ParserException("Jsoup error("+url+"): " + e1.getMessage());
 		}
 		WiNews news = new WiNews();
-		news.setId(CommonParser.getId(sourceID, url.toString()));
 		news.setUrl(url);
 		news.setSourceID(sourceID);
 		news.setSource(source);
@@ -103,27 +102,32 @@ public class SimpleWiParser implements WiParser {
 			if(e.getElementsByTag("img").isEmpty()) {
 				continue;
 			}
-			String[] urlSp = url.toString().split("/");
-			String rootUrl = url.toString()
-					.replace(urlSp[urlSp.length - 1], "");
 			String picRelUrl = e.getElementsByTag("img").attr("src");
-			while (picRelUrl.startsWith("../")) {
-				urlSp = rootUrl.split("/");
-				rootUrl = rootUrl.replace(urlSp[urlSp.length - 1] + "/", "");
-				picRelUrl = picRelUrl.substring(3);
-			}
-			String picAbsUrl = rootUrl + picRelUrl;
 			WiNewsPicture pic = new WiNewsPicture();
-			pic.setNewsId(news.getId());
 			try {
-				pic.setUrl(new URL(picAbsUrl));
-			} catch (MalformedURLException e1) {
-				throw new ParserException("URL create error: "
-						+ e1.getMessage());
+				URL picUrl = new URL(picRelUrl);
+				pic.setUrl(picUrl);
+			} catch (MalformedURLException e2) {
+				String[] urlSp = url.toString().split("/");
+				String rootUrl = url.toString()
+						.replace(urlSp[urlSp.length - 1], "");
+				while (picRelUrl.startsWith("../")) {
+					urlSp = rootUrl.split("/");
+					rootUrl = rootUrl.replace(urlSp[urlSp.length - 1] + "/", "");
+					picRelUrl = picRelUrl.substring(3);
+				}
+				String picAbsUrl = rootUrl + picRelUrl;
+				pic.setNewsUrl(news.getUrl());
+				try {
+					pic.setUrl(new URL(picAbsUrl));
+				} catch (MalformedURLException e1) {
+					throw new ParserException("URL create error: "
+							+ e1.getMessage());
+				}
 			}
 			pic.setComment(e.text().trim().replaceAll("^ *", "")
 					.replaceAll(" *$", ""));
-			System.out.println("Picture Link: " + picAbsUrl + "("
+			System.out.println("Picture Link: " + pic.getUrl() + "("
 					+ pic.getComment() + ")");
 //			System.out.print(".");
 			news.addPicture(pic);
@@ -170,9 +174,9 @@ public class SimpleWiParser implements WiParser {
 	}
 
 	public static void main(String[] args) throws MalformedURLException {
-		WiParser p = new SimpleWiParser("hainanrb", "海南日报");
+		WiParser p = new SimpleWiParser("anhuirb", "cc日报");
 		WiNews news = p.parse(new URL(
-				"http://hnrb.hinews.cn/html/2014-12/21/content_1_2.htm"));
+				"http://epaper.anhuinews.com/html/ahrb/20140101/article_3037595.shtml"));
 		System.out.println(news);
 
 	}

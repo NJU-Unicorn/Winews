@@ -26,7 +26,6 @@ public class HainrbParser implements WiParser{
 			throw new ParserException("Jsoup error: " + e1.getMessage());
 		}
 		WiNews news = new WiNews();
-		news.setId(CommonParser.getId(sourceID, url.toString()));
 		news.setUrl(url);
 		news.setSourceID(sourceID);
 		news.setSource("海南日报");
@@ -65,7 +64,7 @@ public class HainrbParser implements WiParser{
 			}
 			String picAbsUrl = rootUrl + picRelUrl;
 			WiNewsPicture pic = new WiNewsPicture();
-			pic.setNewsId(news.getId());
+			pic.setNewsUrl(news.getUrl());
 			try {
 				pic.setUrl(new URL(picAbsUrl));
 			} catch (MalformedURLException e1) {

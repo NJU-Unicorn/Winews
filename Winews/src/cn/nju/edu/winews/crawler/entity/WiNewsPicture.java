@@ -3,23 +3,23 @@ package cn.nju.edu.winews.crawler.entity;
 import java.net.URL;
 
 public class WiNewsPicture {
-	private String newsId;
+	private URL newsUrl;
 	private URL url;
 	private String comment;
 
+
 	/**
-	 * @return the newsId
+	 * @return the newsUrl
 	 */
-	public String getNewsId() {
-		return newsId;
+	public URL getNewsUrl() {
+		return newsUrl;
 	}
 
 	/**
-	 * @param newsId
-	 *            the newsId to set
+	 * @param newsUrl the newsUrl to set
 	 */
-	public void setNewsId(String newsId) {
-		this.newsId = newsId;
+	public void setNewsUrl(URL newsUrl) {
+		this.newsUrl = newsUrl;
 	}
 
 	/**
