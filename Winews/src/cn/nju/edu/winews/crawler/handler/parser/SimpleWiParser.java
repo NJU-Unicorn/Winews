@@ -52,7 +52,7 @@ public class SimpleWiParser implements WiParser {
 		try {
 			doc = Jsoup.parse(url, timeoutMillis);
 		} catch (IOException e1) {
-			throw new ParserException("Jsoup error: " + e1.getMessage());
+			throw new ParserException("Jsoup error("+url+"): " + e1.getMessage());
 		}
 		WiNews news = new WiNews();
 		news.setId(CommonParser.getId(sourceID, url.toString()));
@@ -61,12 +61,13 @@ public class SimpleWiParser implements WiParser {
 		news.setSource(source);
 		news.setTitle(doc.select(titleSelector).text().trim());
 		String subTitle = "";
-		for(Element e: doc.select(subTitleSelector)) {
+		for (Element e : doc.select(subTitleSelector)) {
 			subTitle += e.text().trim() + " ";
 		}
 		news.setSubTitle(subTitle.trim());
 		news.setLayout(doc.select(layoutSelector).text().trim());
-		news.setDate(CommonParser.formatDate(dateFormat, doc.select(dateSelector).text()));
+		news.setDate(CommonParser.formatDate(dateFormat,
+				doc.select(dateSelector).text()));
 		for (Element e : doc.select(contentSelector)) {
 			String line = e.text().trim().replaceAll("^ *", "")
 					.replaceAll(" *$", "")
@@ -96,7 +97,9 @@ public class SimpleWiParser implements WiParser {
 			}
 			pic.setComment(e.text().trim().replaceAll("^ *", "")
 					.replaceAll(" *$", ""));
-			System.out.println("Picture Link: " + picAbsUrl +"("+pic.getComment()+")");
+			System.out.println("Picture Link: " + picAbsUrl + "("
+					+ pic.getComment() + ")");
+//			System.out.print(".");
 			news.addPicture(pic);
 		}
 		return news;
@@ -138,5 +141,13 @@ public class SimpleWiParser implements WiParser {
 				|| pictureSelector.equals(SimpleWiParser.UNKNOWN_VALUE)) {
 			throw new ConfigException("Congif file is incomplete!");
 		}
+	}
+
+	public static void main(String[] args) throws MalformedURLException {
+		WiParser p = new SimpleWiParser("ynrb", "云南日报");
+		WiNews news = p.parse(new URL(
+				"http://yndaily.yunnan.cn/html/2014-12/21/content_920158.htm"));
+		System.out.println(news);
+
 	}
 }

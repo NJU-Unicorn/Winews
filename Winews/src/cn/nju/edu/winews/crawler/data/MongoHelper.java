@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import cn.nju.edu.winews.crawler.data.exception.MongoIOException;
+import cn.nju.edu.winews.crawler.entity.WiDate;
 import cn.nju.edu.winews.crawler.entity.WiNews;
 import cn.nju.edu.winews.crawler.entity.WiNewsPicture;
 
@@ -21,13 +22,44 @@ public class MongoHelper {
 
 	public MongoHelper() throws Exception {
 		try {
-//			client = new MongoClient("121.40.127.177", 18017);
+			// client = new MongoClient("121.40.127.177", 18017);
 			client = new MongoClient("localhost", 27017);
-//			client = new MongoClient("localhost", 18017);
+			// client = new MongoClient("localhost", 18017);
 		} catch (Exception e) {
 			throw e;
 		}
 		db = client.getDB("Winews");
+	}
+
+	public boolean existsDate(String sourceID, WiDate date) {
+		DBCollection coll = db.getCollection("_date");
+		BasicDBObject dbObj = new BasicDBObject("date", sourceID
+				+ date.toString());
+		return coll.findOne(dbObj) != null;
+	}
+
+	public void addDate(String sourceID, WiDate date) {
+		DBCollection coll = db.getCollection("_date");
+		BasicDBObject dbObj = new BasicDBObject("date", sourceID
+				+ date.toString());
+		coll.save(dbObj);
+	}
+
+	public boolean existsUrl(String url) {
+		DBCollection coll = db.getCollection("_url");
+		BasicDBObject dbObj = new BasicDBObject("url", url);
+		return coll.findOne(dbObj) != null;
+	}
+
+	public void addUrl(String url) {
+		DBCollection coll = db.getCollection("_url");
+		BasicDBObject dbObj = new BasicDBObject("url", url);
+		coll.save(dbObj);
+	}
+
+	public void clearUrl() {
+		DBCollection coll = db.getCollection("_url");
+		coll.remove(new BasicDBObject());
 	}
 
 	public boolean existsNews(WiNews news) {
@@ -45,7 +77,7 @@ public class MongoHelper {
 			coll.createIndex(new BasicDBObject("news_id", 1),
 					new BasicDBObject("unique", true).append("name", "news_id"));
 		}
-		if(coll.findOne(new BasicDBObject("news_id", news.getId())) != null) {
+		if (coll.findOne(new BasicDBObject("news_id", news.getId())) != null) {
 			System.out.println("News already in the database.");
 			return;
 		}
@@ -59,7 +91,7 @@ public class MongoHelper {
 	public WiNews getNews(String sourceID, String id) {
 		DBCollection coll = db.getCollection(sourceID);
 		DBObject obj = coll.findOne(new BasicDBObject("news_id", id));
-		if(obj != null) {
+		if (obj != null) {
 			WiNews result = null;
 			try {
 				result = DBObject2News(obj);
@@ -74,16 +106,16 @@ public class MongoHelper {
 
 	public void removeNews(String sourceID, String id) {
 		DBCollection coll = db.getCollection(sourceID);
-		coll.remove(new BasicDBObject("news_id",id));
+		coll.remove(new BasicDBObject("news_id", id));
 	}
 
 	public void updateNews(WiNews news) {
 		DBCollection coll = db.getCollection(news.getSourceID());
-		coll.remove(new BasicDBObject("news_id",news.getId()));
+		coll.remove(new BasicDBObject("news_id", news.getId()));
 		coll.findOne(new BasicDBObject("news_id", news.getId()));
 		coll.save(news2DBObject(news));
 	}
-	
+
 	private WiNews DBObject2News(DBObject o) throws MalformedURLException {
 		WiNews news = new WiNews();
 		news.setId(o.get("news_id").toString());
@@ -94,7 +126,7 @@ public class MongoHelper {
 		news.setSourceID(o.get("source_id").toString());
 		news.setSubTitle(o.get("sub_title").toString());
 		news.setUrl(new URL(o.get("url").toString()));
-		for(Object listObj: ((BasicDBList)o.get("pictures"))) {
+		for (Object listObj : ((BasicDBList) o.get("pictures"))) {
 			DBObject dbListObj = (DBObject) listObj;
 			WiNewsPicture pic = new WiNewsPicture();
 			pic.setNewsId(news.getId());

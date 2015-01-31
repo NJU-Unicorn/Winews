@@ -27,7 +27,8 @@ public class TjrbHandler extends WiHandler {
 
 	@Override
 	public void getLinks(URL url,int depth) throws Exception {
-		if(depth>MAX_DEPTH) {
+		WiDate curDate = getDateFromLink(url.toString());
+		if (depth > MAX_DEPTH) {
 			return;
 		}
 		Document doc = Jsoup.parse(url, timeoutMillis);
@@ -35,23 +36,23 @@ public class TjrbHandler extends WiHandler {
 		WiUrlFilter urlFilter = new WiUrlFilter();
 		HashSet<URL> urlSet = urlFilter.filter(doc.baseUri(), links);
 		for (URL link : urlSet) {
-			// Check URL
-			String dateStr;
-			try {
-				dateStr = getDateFromLink(link.toString()).toString();
-			} catch (Exception e1) {
-				continue;
-			}
-			if (!DATE_SET.contains(dateStr)) {
-				if (!URL_SET.contains(link)) {
-					URL_SET.add(link);
+			// Check URL date
+			WiDate linkDate = getDateFromLink(url.toString());
+			// 如果页面中发现的链接的日期不晚于页面自身的链接日期
+			if (!linkDate.after(curDate)) {
+				// 如果该链接没有被爬取过
+				if (!mongo.existsUrl(link.toString())) {
+					mongo.addUrl(link.toString()); // 链接加入链接列表
+					// 如果是节点链接
 					if (Pattern.matches(nodeUrlPattern, link.toString())) {
 						try {
-							getLinks(link,depth++);
+							System.out.println("Node Link: " + link);
+							getLinks(link, depth++);
 						} catch (Exception e) {
 							e.printStackTrace();
 							continue;
 						}
+						// 如果是正文链接
 					} else if (Pattern.matches(contentUrlPattern,
 							link.toString())) {
 						System.out.println("Content Link: " + link);
@@ -72,8 +73,9 @@ public class TjrbHandler extends WiHandler {
 							e.printStackTrace();
 							continue;
 						}
+						// 如果有标题就保存
 						if (!news.getTitle().equals("")) {
-							save(news);
+							mongo.addNews(news);
 						}
 					}
 				}

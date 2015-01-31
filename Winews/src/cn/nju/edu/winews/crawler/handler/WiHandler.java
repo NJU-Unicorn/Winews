@@ -38,8 +38,7 @@ public abstract class WiHandler {
 	public static final int MAX_DEPTH = 3;
 
 	protected String sourceID = "";
-	protected HashSet<URL> URL_SET = new HashSet<URL>();
-	protected HashSet<String> DATE_SET = new HashSet<String>();
+	protected MongoHelper mongo;
 
 	protected int timeoutMillis;
 	protected String nodeUrlPattern;
@@ -51,6 +50,11 @@ public abstract class WiHandler {
 
 	public WiHandler(String sourceID) {
 		this.sourceID = sourceID;
+		try {
+			mongo = new MongoHelper();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public synchronized void start(WiDate date) {
@@ -64,25 +68,32 @@ public abstract class WiHandler {
 				System.err.println(rootUrlStr + "不能读取");
 				break;
 			}
-			try {
-				getLinks(url,0);
-			} catch (Exception e) {
-				e.printStackTrace();
-				continue;
+			if (!mongo.existsDate(sourceID,date)) {
+				try {
+					System.out.println("\n" +date);
+					getLinks(url, 0);
+				} catch (Exception e) {
+					e.printStackTrace();
+					continue;
+				}
+				mongo.clearUrl();
+				mongo.addDate(sourceID,date);
+			} else {
+				System.out.println(date + "has been fetched!");
 			}
-			URL_SET.clear();
-			DATE_SET.add(date.toString());
+			
 			date.toLastDay();
 			// sleep a random time
 			try {
-				Thread.sleep((int)Math.random()*2000);
+				Thread.sleep((int) Math.random() * 2000);
 			} catch (InterruptedException e) {
 			}
 		}
 	}
 
-	public void getLinks(URL url,int depth) throws Exception {
-		if(depth>MAX_DEPTH) {
+	public void getLinks(URL url, int depth) throws Exception {
+		WiDate curDate = getDateFromLink(url.toString());
+		if (depth > MAX_DEPTH) {
 			return;
 		}
 		Document doc = Jsoup.parse(url, timeoutMillis);
@@ -90,27 +101,28 @@ public abstract class WiHandler {
 		WiUrlFilter urlFilter = new WiUrlFilter();
 		HashSet<URL> urlSet = urlFilter.filter(doc.baseUri(), links);
 		for (URL link : urlSet) {
-			// Check URL
-			String dateStr;
-			try {
-				dateStr = getDateFromLink(link.toString()).toString();
-			} catch (Exception e1) {
-				continue;
-			}
-			if (!DATE_SET.contains(dateStr)) {
-				if (!URL_SET.contains(link)) {
-					URL_SET.add(link);
+			// Check URL date
+			WiDate linkDate = getDateFromLink(url.toString());
+			// 如果页面中发现的链接的日期等于页面自身的链接日期
+			if (linkDate.equals(curDate)) {
+				// 如果该链接没有被爬取过
+				if (!mongo.existsUrl(link.toString())) {
+					mongo.addUrl(link.toString()); // 链接加入链接列表
+					// 如果是节点链接
 					if (Pattern.matches(nodeUrlPattern, link.toString())) {
 						try {
-							System.out.println("Node Link: " + link);
-							getLinks(link,depth++);
+//							System.out.println("Node Link: " + link);
+							System.out.print(".");
+							getLinks(link, depth++);
 						} catch (Exception e) {
 							e.printStackTrace();
 							continue;
 						}
+						// 如果是正文链接
 					} else if (Pattern.matches(contentUrlPattern,
 							link.toString())) {
-						System.out.println("Content Link: " + link);
+//						System.out.println("Content Link: " + link);
+						System.out.print(".");
 						WiNews news;
 						try {
 							WiParser parser = ParserFactory.createParser(
@@ -120,18 +132,14 @@ public abstract class WiHandler {
 							e.printStackTrace();
 							continue;
 						}
+						// 如果有标题就保存
 						if (!news.getTitle().equals("")) {
-							save(news);
+							mongo.addNews(news);
 						}
 					}
 				}
 			}
 		}
-	}
-
-	protected void save(WiNews news) throws Exception {
-		MongoHelper mongo = new MongoHelper();
-		mongo.addNews(news);
 	}
 
 	protected WiDate getDateFromLink(String s) throws ParseException {
