@@ -7,6 +7,7 @@ import java.net.URL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import cn.nju.edu.winews.crawler.entity.WiNews;
 import cn.nju.edu.winews.crawler.entity.WiNewsPicture;
@@ -50,7 +51,12 @@ public class HainrbParser implements WiParser{
 				news.appendContent(line);
 			}
 		}
-		for (Element e : doc.select("table#newspic table[align=center]")) {
+		Elements es=doc.select("table#newspic table[align=center]");
+		for (Element e : es) {
+			if (e.getElementsByTag("img").isEmpty()) {
+				continue;
+				
+			}
 			String[] urlSp = url.toString().split("/");
 			String rootUrl = url.toString()
 					.replace(urlSp[urlSp.length - 1], "");
@@ -77,7 +83,7 @@ public class HainrbParser implements WiParser{
 		return news;
 	}
 	public static void main(String[] args) throws MalformedURLException {
-		WiNews news = new HainrbParser().parse(new URL("http://hnrb.hinews.cn/html/2014-12/21/content_1_2.htm"));
+		WiNews news = new HainrbParser().parse(new URL("http://hnrb.hinews.cn/html/2014-12/21/content_1_3.htm"));
 		System.out.println(news);
 	}
 	
