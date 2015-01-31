@@ -24,8 +24,8 @@ public class SimpleWiParser implements WiParser {
 	public static final String TITLE_SELECTOR_KEY = "title_selector";
 	public static final String SUBTITLE_SELECTOR_KEY = "subtitle_selector";
 	public static final String LAYOUT_SELECTOR_KEY = "layout_selector";
-	public static final String DATE_SELECTOR_KEY = "date_selector";
-	public static final String DATE_FORMAT_KEY = "content_date_format";
+	public static final String DATE_PATTERN_KEY = "date_pattern";
+	public static final String DATE_FORMAT_KEY = "date_format";
 	public static final String CONTENT_SELECTOR_KEY = "content_selector";
 	public static final String PICTURE_SELECTOR_KEY = "picture_selector";
 	public static final String UNKNOWN_VALUE = "NULL";
@@ -37,7 +37,7 @@ public class SimpleWiParser implements WiParser {
 	protected String titleSelector;
 	protected String subTitleSelector;
 	protected String layoutSelector;
-	protected String dateSelector;
+	protected String datePattern;
 	protected String dateFormat;
 	protected String contentSelector;
 	protected String pictureSelector;
@@ -67,8 +67,8 @@ public class SimpleWiParser implements WiParser {
 		}
 		news.setSubTitle(subTitle.trim());
 		news.setLayout(doc.select(layoutSelector).text().trim());
-		news.setDate(CommonParser.formatDate(dateFormat,
-				doc.select(dateSelector).text()));
+		String dateStr = CommonParser.getDateFromLink(datePattern, dateFormat, url.toString()).toString();
+		news.setDate(CommonParser.formatDate("yyyy-MM-dd",dateStr));
 		for (Element e : doc.select(contentSelector)) {
 			if(!e.getElementsByTag("br").isEmpty()) {
 				String raw = e.html();
@@ -83,16 +83,16 @@ public class SimpleWiParser implements WiParser {
 				Document newDoc = Jsoup.parse(raw);
 				String[] lines = newDoc.text().split("\\[BREnter\\]");
 				for(int i = 0; i < lines.length;i++) {
-					String line = lines[i].trim().replaceAll("^ *", "")
-							.replaceAll(" *$", "")
+					String line = lines[i].trim().replaceAll("^( |　)*", "")
+							.replaceAll("( |　)*$", "").replace("　　", "\n")
 							+ "\n";
 					if (line.length() > 1) {
 						news.appendContent(line);
 					}
 				}
 			} else {
-				String line = e.text().trim().replaceAll("^ *", "")
-						.replaceAll(" *$", "")
+				String line = e.text().trim().replaceAll("^( |　)*", "")
+						.replaceAll("( |　)*$", "").replace("　　", "\n")
 						+ "\n";
 				if (line.length() > 1) {
 					news.appendContent(line);
@@ -100,6 +100,9 @@ public class SimpleWiParser implements WiParser {
 			}
 		}
 		for (Element e : doc.select(pictureSelector)) {
+			if(e.getElementsByTag("img").isEmpty()) {
+				continue;
+			}
 			String[] urlSp = url.toString().split("/");
 			String rootUrl = url.toString()
 					.replace(urlSp[urlSp.length - 1], "");
@@ -146,7 +149,7 @@ public class SimpleWiParser implements WiParser {
 				SimpleWiParser.UNKNOWN_VALUE);
 		layoutSelector = conf.getProperty(SimpleWiParser.LAYOUT_SELECTOR_KEY,
 				SimpleWiParser.UNKNOWN_VALUE);
-		dateSelector = conf.getProperty(SimpleWiParser.DATE_SELECTOR_KEY,
+		datePattern = conf.getProperty(SimpleWiParser.DATE_PATTERN_KEY,
 				SimpleWiParser.UNKNOWN_VALUE);
 		dateFormat = conf.getProperty(SimpleWiParser.DATE_FORMAT_KEY,
 				SimpleWiParser.UNKNOWN_VALUE);
@@ -158,7 +161,7 @@ public class SimpleWiParser implements WiParser {
 		if (titleSelector.equals(SimpleWiParser.UNKNOWN_VALUE)
 				|| subTitleSelector.equals(SimpleWiParser.UNKNOWN_VALUE)
 				|| layoutSelector.equals(SimpleWiParser.UNKNOWN_VALUE)
-				|| dateSelector.equals(SimpleWiParser.UNKNOWN_VALUE)
+				|| datePattern.equals(SimpleWiParser.UNKNOWN_VALUE)
 				|| dateFormat.equals(SimpleWiParser.UNKNOWN_VALUE)
 				|| contentSelector.equals(SimpleWiParser.UNKNOWN_VALUE)
 				|| pictureSelector.equals(SimpleWiParser.UNKNOWN_VALUE)) {
@@ -167,9 +170,9 @@ public class SimpleWiParser implements WiParser {
 	}
 
 	public static void main(String[] args) throws MalformedURLException {
-		WiParser p = new SimpleWiParser("lnrb", "辽宁日报");
+		WiParser p = new SimpleWiParser("hainanrb", "海南日报");
 		WiNews news = p.parse(new URL(
-				"http://epaper.lnd.com.cn/html/lnrb/20150131/lnrb1483747.html"));
+				"http://hnrb.hinews.cn/html/2014-12/21/content_1_2.htm"));
 		System.out.println(news);
 
 	}

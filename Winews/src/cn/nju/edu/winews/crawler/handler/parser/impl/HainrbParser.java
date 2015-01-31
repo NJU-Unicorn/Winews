@@ -51,6 +51,9 @@ public class HainrbParser implements WiParser{
 			}
 		}
 		for (Element e : doc.select("table#newspic table[align=center]")) {
+			if(e.getElementsByTag("img").isEmpty()) {
+				continue;
+			}
 			String[] urlSp = url.toString().split("/");
 			String rootUrl = url.toString()
 					.replace(urlSp[urlSp.length - 1], "");
@@ -62,7 +65,6 @@ public class HainrbParser implements WiParser{
 			}
 			String picAbsUrl = rootUrl + picRelUrl;
 			WiNewsPicture pic = new WiNewsPicture();
-			System.out.println("Picture Link: " + picAbsUrl);
 			pic.setNewsId(news.getId());
 			try {
 				pic.setUrl(new URL(picAbsUrl));
@@ -70,14 +72,15 @@ public class HainrbParser implements WiParser{
 				throw new ParserException("URL create error: "
 						+ e1.getMessage());
 			}
-			pic.setComment(e.getElementsByTag("a").attr("title").replaceAll("^ *", "")
-					.replaceAll(" *$", ""));
+			pic.setComment(e.getElementsByTag("a").attr("title").replaceAll("^( | )*", "")
+					.replaceAll("( | )*$", ""));
+			System.out.println("Picture Link: " + picAbsUrl + "("+pic.getComment()+")");
 			news.addPicture(pic);
 		}
 		return news;
 	}
 	public static void main(String[] args) throws MalformedURLException {
-		WiNews news = new HainrbParser().parse(new URL("http://hnrb.hinews.cn/html/2014-12/21/content_1_2.htm"));
+		WiNews news = new HainrbParser().parse(new URL("http://hnrb.hinews.cn/html/2014-12/21/content_1_3.htm"));
 		System.out.println(news);
 	}
 	

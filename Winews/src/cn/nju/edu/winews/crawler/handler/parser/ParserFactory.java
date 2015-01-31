@@ -25,6 +25,10 @@ public class ParserFactory {
 			return "云南日报";
 		case "lnrb":
 			return "辽宁日报";
+		case "hljrb":
+			return "黑龙江日报";
+		case "hainanrb":
+			return "海南日报";
 		default:
 			throw new ParserException("Can't recognize the sourceID: "
 					+ sourceID);

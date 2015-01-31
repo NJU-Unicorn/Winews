@@ -6,6 +6,7 @@ import cn.nju.edu.winews.crawler.entity.WiDate;
 import cn.nju.edu.winews.crawler.handler.SimpleWiHandler;
 import cn.nju.edu.winews.crawler.handler.WiHandler;
 import cn.nju.edu.winews.crawler.handler.impl.CqrbHandler;
+import cn.nju.edu.winews.crawler.handler.impl.HainanrbHandler;
 import cn.nju.edu.winews.crawler.handler.impl.HbrbHandler;
 import cn.nju.edu.winews.crawler.handler.impl.HenanrbHandler;
 import cn.nju.edu.winews.crawler.handler.impl.JfrbHandler;
@@ -31,6 +32,12 @@ public class WiNewsMain {
 			break;
 		case "lnrb":
 			handler = new SimpleWiHandler("lnrb");
+			break;
+		case "hljrb":
+			handler = new SimpleWiHandler("hljrb");
+			break;
+		case "hainanrb":
+			handler = new SimpleWiHandler("hainanrb");
 			break;
 		default:
 			return;
