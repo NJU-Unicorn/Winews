@@ -13,12 +13,12 @@ import cn.nju.edu.winews.crawler.entity.WiNewsPicture;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
 import cn.nju.edu.winews.crawler.handler.parser.WiParser;
 
-public class XizangrbParser implements WiParser{
-	private static final String sourceID = "xizangrb";
+public class QinghairbParser implements WiParser{
+	private static final String sourceID = "qinghairb";
 	private static final int timeoutMillis = 5000;
 	public static void main(String[] args) throws MalformedURLException {
 		// TODO Auto-generated method stub
-		WiNews news = new XizangrbParser().parse(new URL("http://epaper.chinatibetnews.com/xzrb/html/2014-12/21/content_588601.htm"));
+		WiNews news = new QinghairbParser().parse(new URL("http://epaper.tibet3.com/qhrb/html/2014-12/21/content_200221.htm"));
 		System.out.println(news);
 
 	}
@@ -35,7 +35,7 @@ public class XizangrbParser implements WiParser{
 		news.setId(CommonParser.getId(sourceID, url.toString()));
 		news.setUrl(url);
 		news.setSourceID(sourceID);
-		news.setSource("西藏日报");
+		news.setSource("青海日报");
 		news.setTitle(doc.select("td.font01").text().trim());
 		String subTitle = "";
 		for(Element e: doc.select("td.font02")) {
@@ -78,5 +78,6 @@ public class XizangrbParser implements WiParser{
 		}
 		return news;
 	}
+	
 
 }
