@@ -21,11 +21,18 @@ public class SimpleWiHandler extends WiHandler {
 
 	public void getLinks(URL url, int depth) throws Exception {
 		WiDate curDate = getDateFromLink(url.toString());
-		if (depth > MAX_DEPTH) {
-			return;
+//		if (depth > MAX_DEPTH) {
+//			return;
+//		}
+		Document doc;
+		try {
+			doc = Jsoup.parse(url, timeoutMillis);
+		} catch (Exception e1) {
+			Thread.sleep(2000);
+			doc = Jsoup.parse(url, timeoutMillis);
 		}
-		Document doc = Jsoup.parse(url, timeoutMillis);
 		Elements links = doc.getElementsByTag("a");
+		links.addAll(doc.getElementsByTag("area"));
 		WiUrlFilter urlFilter = new WiUrlFilter();
 		HashSet<URL> urlSet = urlFilter.filter(doc.baseUri(), links);
 		for (URL link : urlSet) {
