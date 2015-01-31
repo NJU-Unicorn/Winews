@@ -13,8 +13,8 @@ import cn.nju.edu.winews.crawler.entity.WiNewsPicture;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
 import cn.nju.edu.winews.crawler.handler.parser.WiParser;
 
-public class HnrbParser implements WiParser {
-	private static final String sourceID = "hnrb";
+public class HenanrbParser implements WiParser {
+	private static final String sourceID = "henanrb";
 	private static final int timeoutMillis = 5000;
 
 	public WiNews parse(URL url) {
@@ -78,7 +78,7 @@ public class HnrbParser implements WiParser {
 	}
 	
 	public static void main(String[] args) throws MalformedURLException {
-		WiNews news = new HnrbParser().parse(new URL("http://newpaper.dahe.cn/hnrb/html/2015-01/30/content_1219014.htm?div=1"));
+		WiNews news = new HenanrbParser().parse(new URL("http://newpaper.dahe.cn/hnrb/html/2015-01/30/content_1219014.htm?div=1"));
 		System.out.println(news);
 	}
 
