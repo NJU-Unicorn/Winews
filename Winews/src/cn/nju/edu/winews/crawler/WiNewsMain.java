@@ -29,6 +29,9 @@ public class WiNewsMain {
 		case "ynrb":
 			handler = new SimpleWiHandler("ynrb");
 			break;
+		case "lnrb":
+			handler = new SimpleWiHandler("lnrb");
+			break;
 		default:
 			return;
 		}

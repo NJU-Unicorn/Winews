@@ -23,6 +23,8 @@ public class ParserFactory {
 		switch (sourceID) {
 		case "ynrb":
 			return "云南日报";
+		case "lnrb":
+			return "辽宁日报";
 		default:
 			throw new ParserException("Can't recognize the sourceID: "
 					+ sourceID);

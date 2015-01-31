@@ -74,6 +74,8 @@ public abstract class WiHandler {
 					getLinks(url, 0);
 				} catch (Exception e) {
 					e.printStackTrace();
+					mongo.clearUrl();
+					date.toLastDay();
 					continue;
 				}
 				mongo.clearUrl();
@@ -93,11 +95,12 @@ public abstract class WiHandler {
 
 	public void getLinks(URL url, int depth) throws Exception {
 		WiDate curDate = getDateFromLink(url.toString());
-		if (depth > MAX_DEPTH) {
-			return;
-		}
+//		if (depth > MAX_DEPTH) {
+//			return;
+//		}
 		Document doc = Jsoup.parse(url, timeoutMillis);
 		Elements links = doc.getElementsByTag("a");
+		links.addAll(doc.getElementsByTag("area"));
 		WiUrlFilter urlFilter = new WiUrlFilter();
 		HashSet<URL> urlSet = urlFilter.filter(doc.baseUri(), links);
 		for (URL link : urlSet) {

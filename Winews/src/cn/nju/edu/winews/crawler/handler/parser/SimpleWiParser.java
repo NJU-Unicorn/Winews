@@ -3,6 +3,7 @@ package cn.nju.edu.winews.crawler.handler.parser;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Properties;
 
 import org.jsoup.Jsoup;
@@ -69,11 +70,33 @@ public class SimpleWiParser implements WiParser {
 		news.setDate(CommonParser.formatDate(dateFormat,
 				doc.select(dateSelector).text()));
 		for (Element e : doc.select(contentSelector)) {
-			String line = e.text().trim().replaceAll("^ *", "")
-					.replaceAll(" *$", "")
-					+ "\n";
-			if (line.length() > 1) {
-				news.appendContent(line);
+			if(!e.getElementsByTag("br").isEmpty()) {
+				String raw = e.html();
+				// 把br替换为换行符
+				HashSet<String> brTypes = new HashSet<String>();
+				for(Element bre: e.getElementsByTag("br")) {
+					brTypes.add(bre.toString());
+				}
+				for(String brStr:brTypes) {
+					raw = raw.replace(brStr, "[BREnter]");
+				}
+				Document newDoc = Jsoup.parse(raw);
+				String[] lines = newDoc.text().split("\\[BREnter\\]");
+				for(int i = 0; i < lines.length;i++) {
+					String line = lines[i].trim().replaceAll("^ *", "")
+							.replaceAll(" *$", "")
+							+ "\n";
+					if (line.length() > 1) {
+						news.appendContent(line);
+					}
+				}
+			} else {
+				String line = e.text().trim().replaceAll("^ *", "")
+						.replaceAll(" *$", "")
+						+ "\n";
+				if (line.length() > 1) {
+					news.appendContent(line);
+				}
 			}
 		}
 		for (Element e : doc.select(pictureSelector)) {
@@ -144,9 +167,9 @@ public class SimpleWiParser implements WiParser {
 	}
 
 	public static void main(String[] args) throws MalformedURLException {
-		WiParser p = new SimpleWiParser("ynrb", "云南日报");
+		WiParser p = new SimpleWiParser("lnrb", "辽宁日报");
 		WiNews news = p.parse(new URL(
-				"http://yndaily.yunnan.cn/html/2014-12/21/content_920158.htm"));
+				"http://epaper.lnd.com.cn/html/lnrb/20150131/lnrb1483747.html"));
 		System.out.println(news);
 
 	}
