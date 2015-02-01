@@ -33,6 +33,11 @@ public class WiNewsMain {
 		default:
 			handler = new SimpleWiHandler(args[0]);
 		}
-		handler.start(new WiDate(new Date()));
+		if (args.length != 1) {
+			handler.start(new WiDate(Integer.parseInt(args[1]), Integer
+					.parseInt(args[2]), Integer.parseInt(args[3])));
+		} else {
+			handler.start(new WiDate(new Date()));
+		}
 	}
 }

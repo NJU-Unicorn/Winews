@@ -42,8 +42,8 @@ public class XinjiangrbHandler extends WiHandler {
 			// 如果页面中发现的链接的日期等于页面自身的链接日期
 			if (linkDate.equals(curDate)) {
 				// 如果该链接没有被爬取过
-				if (!mongo.existsUrl(link.toString())) {
-					mongo.addUrl(link.toString()); // 链接加入链接列表
+				if (!mongo.existsUrl(sourceID,link.toString())) {
+					mongo.addUrl(sourceID,link.toString()); // 链接加入链接列表
 					// 如果是节点链接
 					if (Pattern.matches(nodeUrlPattern, link.toString())) {
 						try {

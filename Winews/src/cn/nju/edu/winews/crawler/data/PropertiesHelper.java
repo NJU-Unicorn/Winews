@@ -3,6 +3,7 @@ package cn.nju.edu.winews.crawler.data;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 import cn.nju.edu.winews.crawler.data.exception.ConfigIOException;
@@ -18,7 +19,9 @@ public class PropertiesHelper {
 		}
 		Properties conf = new Properties();
 		try {
-			conf.load(new FileInputStream(filePath));
+			InputStreamReader isr = new InputStreamReader(new FileInputStream(confFile), "utf-8");
+			conf.load(isr);
+			isr.close();
 		} catch (IOException e) {
 			throw new ConfigIOException(e.getMessage());
 		}

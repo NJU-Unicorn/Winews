@@ -1,8 +1,5 @@
 package cn.nju.edu.winews.crawler.data;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import cn.nju.edu.winews.crawler.data.exception.MongoIOException;
 import cn.nju.edu.winews.crawler.entity.WiDate;
 import cn.nju.edu.winews.crawler.entity.WiNews;
@@ -33,38 +30,40 @@ public class MongoHelper {
 
 	public boolean existsDate(String sourceID, WiDate date) {
 		DBCollection coll = db.getCollection("_date");
-		BasicDBObject dbObj = new BasicDBObject("date", sourceID
-				+ date.toString());
+		BasicDBObject dbObj = new BasicDBObject("source_id", sourceID).append(
+				"date", date.toString());
 		return coll.findOne(dbObj) != null;
 	}
 
 	public void addDate(String sourceID, WiDate date) {
 		DBCollection coll = db.getCollection("_date");
-		BasicDBObject dbObj = new BasicDBObject("date", sourceID
-				+ date.toString());
+		BasicDBObject dbObj = new BasicDBObject("source_id", sourceID).append(
+				"date", date.toString());
 		coll.save(dbObj);
 	}
 
-	public boolean existsUrl(String url) {
+	public boolean existsUrl(String sourceID, String url) {
 		DBCollection coll = db.getCollection("_url");
-		BasicDBObject dbObj = new BasicDBObject("url", url);
+		BasicDBObject dbObj = new BasicDBObject("source_id", sourceID).append(
+				"url", url);
 		return coll.findOne(dbObj) != null;
 	}
 
-	public void addUrl(String url) {
+	public void addUrl(String sourceID, String url) {
 		DBCollection coll = db.getCollection("_url");
-		BasicDBObject dbObj = new BasicDBObject("url", url);
+		BasicDBObject dbObj = new BasicDBObject("source_id", sourceID).append(
+				"url", url);
 		coll.save(dbObj);
 	}
 
-	public void clearUrl() {
+	public void clearUrl(String sourceID) {
 		DBCollection coll = db.getCollection("_url");
-		coll.remove(new BasicDBObject());
+		coll.remove(new BasicDBObject("source_id", sourceID));
 	}
 
 	public boolean existsNews(WiNews news) {
 		DBCollection coll = db.getCollection(news.getSourceID());
-		BasicDBObject dbObj = new BasicDBObject("url", news.getUrl());
+		BasicDBObject dbObj = new BasicDBObject("url", news.getUrl().toString());
 		return coll.findOne(dbObj) != null;
 	}
 
@@ -74,10 +73,10 @@ public class MongoHelper {
 		if (!db.getCollectionNames().contains(news.getSourceID())) {
 			db.createCollection(news.getSourceID(), new BasicDBObject());
 			coll = db.getCollection(news.getSourceID());
-			coll.createIndex(new BasicDBObject("url", 1),
-					new BasicDBObject("unique", true).append("name", "url"));
+			coll.createIndex(new BasicDBObject("url", 1), new BasicDBObject(
+					"unique", true).append("name", "url"));
 		}
-		if (coll.findOne(new BasicDBObject("url", news.getUrl())) != null) {
+		if (coll.findOne(new BasicDBObject("url", news.getUrl().toString())) != null) {
 			System.out.println("News already in the database.");
 			return;
 		}
@@ -88,25 +87,25 @@ public class MongoHelper {
 		}
 	}
 
-	private WiNews DBObject2News(DBObject o) throws MalformedURLException {
-		WiNews news = new WiNews();
-		news.setContent(o.get("content").toString());
-		news.setDate(o.get("date").toString());
-		news.setLayout(o.get("layout").toString());
-		news.setSource(o.get("source").toString());
-		news.setSourceID(o.get("source_id").toString());
-		news.setSubTitle(o.get("sub_title").toString());
-		news.setUrl(new URL(o.get("url").toString()));
-		for (Object listObj : ((BasicDBList) o.get("pictures"))) {
-			DBObject dbListObj = (DBObject) listObj;
-			WiNewsPicture pic = new WiNewsPicture();
-			pic.setNewsUrl(news.getUrl());
-			pic.setUrl(new URL(dbListObj.get("url").toString()));
-			pic.setComment(dbListObj.get("comment").toString());
-			news.addPicture(pic);
-		}
-		return news;
-	}
+	// private WiNews DBObject2News(DBObject o) throws MalformedURLException {
+	// WiNews news = new WiNews();
+	// news.setContent(o.get("content").toString());
+	// news.setDate(o.get("date").toString());
+	// news.setLayout(o.get("layout").toString());
+	// news.setSource(o.get("source").toString());
+	// news.setSourceID(o.get("source_id").toString());
+	// news.setSubTitle(o.get("sub_title").toString());
+	// news.setUrl(new URL(o.get("url").toString()));
+	// for (Object listObj : ((BasicDBList) o.get("pictures"))) {
+	// DBObject dbListObj = (DBObject) listObj;
+	// WiNewsPicture pic = new WiNewsPicture();
+	// pic.setNewsUrl(news.getUrl());
+	// pic.setUrl(new URL(dbListObj.get("url").toString()));
+	// pic.setComment(dbListObj.get("comment").toString());
+	// news.addPicture(pic);
+	// }
+	// return news;
+	// }
 
 	private DBObject news2DBObject(WiNews news) {
 		DBObject o = new BasicDBObject();

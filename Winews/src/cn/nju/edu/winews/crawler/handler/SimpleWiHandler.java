@@ -26,10 +26,24 @@ public class SimpleWiHandler extends WiHandler {
 //		}
 		Document doc;
 		try {
-			doc = Jsoup.parse(url, timeoutMillis);
+			doc = Jsoup
+					.connect(url.toString())
+					.ignoreContentType(true)
+					.ignoreHttpErrors(true)
+					.timeout(timeoutMillis)
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; rv:22.0) Gecko/20100101 Firefox/22.0")
+					.get();
 		} catch (Exception e1) {
 			Thread.sleep(2000);
-			doc = Jsoup.parse(url, timeoutMillis);
+			doc = Jsoup
+					.connect(url.toString())
+					.ignoreContentType(true)
+					.ignoreHttpErrors(true)
+					.timeout(timeoutMillis)
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; rv:22.0) Gecko/20100101 Firefox/22.0")
+					.get();
 		}
 		Elements links = doc.getElementsByTag("a");
 		links.addAll(doc.getElementsByTag("area"));
@@ -41,8 +55,8 @@ public class SimpleWiHandler extends WiHandler {
 			// 如果页面中发现的链接的日期不晚于页面自身的链接日期
 			if (!linkDate.after(curDate)) {
 				// 如果该链接没有被爬取过
-				if (!mongo.existsUrl(link.toString())) {
-					mongo.addUrl(link.toString()); // 链接加入链接列表
+				if (!mongo.existsUrl(sourceID, link.toString())) {
+					mongo.addUrl(sourceID, link.toString()); // 链接加入链接列表
 					// 如果是节点链接
 					if (Pattern.matches(nodeUrlPattern, link.toString())) {
 						try {

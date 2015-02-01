@@ -20,31 +20,9 @@ public class ParserFactory {
 		CONTENT_PAGE_PARSER, OLD_CONTENT_PAGE_PARSER
 	}
 
-	private static String sourceID2sourceName(String sourceID) {
-		switch (sourceID) {
-		case "ynrb":
-			return "云南日报";
-		case "lnrb":
-			return "辽宁日报";
-		case "hljrb":
-			return "黑龙江日报";
-		case "hainanrb":
-			return "海南日报";
-		case "hunanrb":
-			return "湖南日报";
-		case "anhuirb":
-			return "安徽日报";
-		case "dazhongrb":
-			return "大众日报";
-		default:
-			throw new ParserException("Can't recognize the sourceID: "
-					+ sourceID);
-		}
-	}
-
 	public static SimpleWiParser createSimpleParser(String sourceID) {
 		if (map.get(sourceID) == null) {
-			SimpleWiParser parser = new SimpleWiParser(sourceID,sourceID2sourceName(sourceID));
+			SimpleWiParser parser = new SimpleWiParser(sourceID);
 			map.put(sourceID, parser);
 		}
 		return map.get(sourceID);

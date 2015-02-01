@@ -42,48 +42,56 @@ public class SimpleWiParser implements WiParser {
 	protected String contentSelector;
 	protected String pictureSelector;
 
-	public SimpleWiParser(String sourceID, String sourceName) {
+	public SimpleWiParser(String sourceID) {
 		this.sourceID = sourceID;
-		this.source = sourceName;
 		loadConf();
 	}
 
 	public WiNews parse(URL url) {
 		Document doc;
 		try {
-			doc = Jsoup.parse(url, timeoutMillis);
+			doc = Jsoup
+					.connect(url.toString())
+					.ignoreContentType(true)
+					.ignoreHttpErrors(true)
+					.timeout(timeoutMillis)
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; rv:22.0) Gecko/20100101 Firefox/22.0")
+					.get();
 		} catch (IOException e1) {
-			throw new ParserException("Jsoup error("+url+"): " + e1.getMessage());
+			throw new ParserException("Jsoup error(" + url + "): "
+					+ e1.getMessage());
 		}
 		WiNews news = new WiNews();
 		news.setUrl(url);
 		news.setSourceID(sourceID);
 		news.setSource(source);
-		news.setTitle(doc.select(titleSelector).text().trim());
+		news.setTitle(doc.select(titleSelector).first().text().trim());
 		String subTitle = "";
 		for (Element e : doc.select(subTitleSelector)) {
 			subTitle += e.text().trim() + " ";
 		}
-		news.setSubTitle(subTitle.trim());
+		news.setSubTitle(subTitle.trim().replace(news.getTitle(), " "));
 		news.setLayout(doc.select(layoutSelector).text().trim());
-		String dateStr = CommonParser.getDateFromLink(datePattern, dateFormat, url.toString()).toString();
-		news.setDate(CommonParser.formatDate("yyyy-MM-dd",dateStr));
+		String dateStr = CommonParser.getDateFromLink(datePattern, dateFormat,
+				url.toString()).toString();
+		news.setDate(CommonParser.formatDate("yyyy-MM-dd", dateStr));
 		for (Element e : doc.select(contentSelector)) {
-			if(!e.getElementsByTag("br").isEmpty()) {
+			if (!e.getElementsByTag("br").isEmpty()) {
 				String raw = e.html();
 				// 把br替换为换行符
 				HashSet<String> brTypes = new HashSet<String>();
-				for(Element bre: e.getElementsByTag("br")) {
+				for (Element bre : e.getElementsByTag("br")) {
 					brTypes.add(bre.toString());
 				}
-				for(String brStr:brTypes) {
+				for (String brStr : brTypes) {
 					raw = raw.replace(brStr, "[BREnter]");
 				}
 				Document newDoc = Jsoup.parse(raw);
 				String[] lines = newDoc.text().split("\\[BREnter\\]");
-				for(int i = 0; i < lines.length;i++) {
+				for (int i = 0; i < lines.length; i++) {
 					String line = lines[i].trim().replaceAll("^( |　)*", "")
-							.replaceAll("( |　)*$", "").replace("　　", "\n")
+							.replaceAll("( |　)*$", "").replace("　　", "\n").trim()
 							+ "\n";
 					if (line.length() > 1) {
 						news.appendContent(line);
@@ -99,7 +107,7 @@ public class SimpleWiParser implements WiParser {
 			}
 		}
 		for (Element e : doc.select(pictureSelector)) {
-			if(e.getElementsByTag("img").isEmpty()) {
+			if (e.getElementsByTag("img").isEmpty()) {
 				continue;
 			}
 			String picRelUrl = e.getElementsByTag("img").attr("src");
@@ -108,15 +116,21 @@ public class SimpleWiParser implements WiParser {
 				URL picUrl = new URL(picRelUrl);
 				pic.setUrl(picUrl);
 			} catch (MalformedURLException e2) {
-				String[] urlSp = url.toString().split("/");
-				String rootUrl = url.toString()
-						.replace(urlSp[urlSp.length - 1], "");
-				while (picRelUrl.startsWith("../")) {
-					urlSp = rootUrl.split("/");
-					rootUrl = rootUrl.replace(urlSp[urlSp.length - 1] + "/", "");
-					picRelUrl = picRelUrl.substring(3);
+				String picAbsUrl;
+				if (picRelUrl.startsWith("/")) {
+					picAbsUrl = url.getProtocol()+"://" + url.getHost() +picRelUrl;
+				} else {
+					String[] urlSp = url.toString().split("/");
+					String rootUrl = url.toString().replace(
+							urlSp[urlSp.length - 1], "");
+					while (picRelUrl.startsWith("../")) {
+						urlSp = rootUrl.split("/");
+						rootUrl = rootUrl.replace(
+								urlSp[urlSp.length - 1] + "/", "");
+						picRelUrl = picRelUrl.substring(3);
+					}
+					picAbsUrl = rootUrl + picRelUrl;
 				}
-				String picAbsUrl = rootUrl + picRelUrl;
 				pic.setNewsUrl(news.getUrl());
 				try {
 					pic.setUrl(new URL(picAbsUrl));
@@ -127,9 +141,15 @@ public class SimpleWiParser implements WiParser {
 			}
 			pic.setComment(e.text().trim().replaceAll("^ *", "")
 					.replaceAll(" *$", ""));
+			if(pic.getComment().equals("")) {
+				pic.setComment(e.getElementsByAttribute("data-title").attr("data-title"));
+			}
+			if(pic.getComment().equals("")) {
+				pic.setComment(e.getElementsByAttribute("title").attr("title"));
+			}
 			System.out.println("Picture Link: " + pic.getUrl() + "("
 					+ pic.getComment() + ")");
-//			System.out.print(".");
+			// System.out.print(".");
 			news.addPicture(pic);
 		}
 		return news;
@@ -146,6 +166,8 @@ public class SimpleWiParser implements WiParser {
 		timeoutMillis = Integer.parseInt(conf.getProperty(
 				WiHandler.TIMEOUT_MILLIS_KEY, ""
 						+ WiHandler.DEFAULT_TIMEOUT_MILLIS));
+		source = conf.getProperty(SimpleWiParser.SOURCE_NAME_KEY,
+				SimpleWiParser.UNKNOWN_VALUE);
 		titleSelector = conf.getProperty(SimpleWiParser.TITLE_SELECTOR_KEY,
 				SimpleWiParser.UNKNOWN_VALUE);
 		subTitleSelector = conf.getProperty(
@@ -163,6 +185,7 @@ public class SimpleWiParser implements WiParser {
 				SimpleWiParser.UNKNOWN_VALUE);
 
 		if (titleSelector.equals(SimpleWiParser.UNKNOWN_VALUE)
+				|| source.equals(SimpleWiParser.UNKNOWN_VALUE)
 				|| subTitleSelector.equals(SimpleWiParser.UNKNOWN_VALUE)
 				|| layoutSelector.equals(SimpleWiParser.UNKNOWN_VALUE)
 				|| datePattern.equals(SimpleWiParser.UNKNOWN_VALUE)
@@ -174,10 +197,9 @@ public class SimpleWiParser implements WiParser {
 	}
 
 	public static void main(String[] args) throws MalformedURLException {
-		WiParser p = new SimpleWiParser("anhuirb", "cc日报");
+		WiParser p = new SimpleWiParser("guizhourb");
 		WiNews news = p.parse(new URL(
-				"http://epaper.anhuinews.com/html/ahrb/20140101/article_3037595.shtml"));
+				"http://58.42.249.98/epaper/gzrb/Content/20141221/Articel01001WD.htm"));
 		System.out.println(news);
-
 	}
 }

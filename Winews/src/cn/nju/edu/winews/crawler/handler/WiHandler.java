@@ -76,11 +76,11 @@ public abstract class WiHandler {
 					getLinks(url, 0);
 				} catch (Exception e) {
 					e.printStackTrace();
-					mongo.clearUrl();
+					mongo.clearUrl(sourceID);
 					date.toLastDay();
 					continue;
 				}
-				mongo.clearUrl();
+				mongo.clearUrl(sourceID);
 				mongo.addDate(sourceID,date);
 			} else {
 				System.out.println(date + "has been fetched!");
@@ -97,7 +97,14 @@ public abstract class WiHandler {
 
 	public void getLinks(URL url, int depth) throws Exception {
 		WiDate curDate = getDateFromLink(url.toString());
-		Document doc = Jsoup.parse(url, timeoutMillis);
+		Document doc = Jsoup
+				.connect(url.toString())
+				.ignoreContentType(true)
+				.ignoreHttpErrors(true)
+				.timeout(timeoutMillis)
+				.userAgent(
+						"Mozilla/5.0 (Windows NT 6.1; rv:22.0) Gecko/20100101 Firefox/22.0")
+				.get();
 		Elements links = doc.getElementsByTag("a");
 		links.addAll(doc.getElementsByTag("area"));
 		WiUrlFilter urlFilter = new WiUrlFilter();
@@ -108,8 +115,8 @@ public abstract class WiHandler {
 			// 如果页面中发现的链接的日期等于页面自身的链接日期
 			if (linkDate.equals(curDate)) {
 				// 如果该链接没有被爬取过
-				if (!mongo.existsUrl(link.toString())) {
-					mongo.addUrl(link.toString()); // 链接加入链接列表
+				if (!mongo.existsUrl(sourceID,link.toString())) {
+					mongo.addUrl(sourceID,link.toString()); // 链接加入链接列表
 					// 如果是节点链接
 					if (Pattern.matches(nodeUrlPattern, link.toString())) {
 						try {
