@@ -1,4 +1,4 @@
-package cn.nju.edu.winews.crawler.handler;
+package cn.nju.edu.winews.crawler.handler.impl;
 
 import java.net.URL;
 import java.text.DateFormat;
@@ -19,10 +19,8 @@ import cn.nju.edu.winews.crawler.data.PropertiesHelper;
 import cn.nju.edu.winews.crawler.data.exception.ConfigIOException;
 import cn.nju.edu.winews.crawler.entity.WiDate;
 import cn.nju.edu.winews.crawler.entity.WiNews;
+import cn.nju.edu.winews.crawler.handler.WiHandler;
 import cn.nju.edu.winews.crawler.handler.exception.ConfigException;
-import cn.nju.edu.winews.crawler.handler.filter.WiUrlFilter;
-import cn.nju.edu.winews.crawler.handler.parser.ParserFactory;
-import cn.nju.edu.winews.crawler.handler.parser.WiParser;
 
 public class SimpleWiHandler implements WiHandler {
 	public static final String TIMEOUT_MILLIS_KEY = "timeout";
@@ -146,7 +144,7 @@ public class SimpleWiHandler implements WiHandler {
 						// System.out.print(".");
 						WiNews news;
 						try {
-							WiParser parser = ParserFactory
+							SimpleWiParser parser = ParserFactory
 									.createSimpleParser(sourceName);
 							news = parser.parse(link);
 							news.setDate(formatDate("yyyy-MM-dd",

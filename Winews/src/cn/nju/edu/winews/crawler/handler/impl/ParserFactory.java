@@ -1,4 +1,4 @@
-package cn.nju.edu.winews.crawler.handler.parser;
+package cn.nju.edu.winews.crawler.handler.impl;
 
 import java.util.HashMap;
 

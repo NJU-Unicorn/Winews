@@ -28,37 +28,37 @@ public class MongoHelper {
 		db = client.getDB("Winews");
 	}
 
-	public boolean existsDate(String sourceID, WiDate date) {
+	public boolean existsDate(String source, WiDate date) {
 		DBCollection coll = db.getCollection("_date");
-		BasicDBObject dbObj = new BasicDBObject("source_id", sourceID).append(
+		BasicDBObject dbObj = new BasicDBObject("source", source).append(
 				"date", date.toString());
 		return coll.findOne(dbObj) != null;
 	}
 
-	public void addDate(String sourceID, WiDate date) {
+	public void addDate(String source, WiDate date) {
 		DBCollection coll = db.getCollection("_date");
-		BasicDBObject dbObj = new BasicDBObject("source_id", sourceID).append(
+		BasicDBObject dbObj = new BasicDBObject("source", source).append(
 				"date", date.toString());
 		coll.save(dbObj);
 	}
 
-	public boolean existsUrl(String sourceID, String url) {
+	public boolean existsUrl(String source, String url) {
 		DBCollection coll = db.getCollection("_url");
-		BasicDBObject dbObj = new BasicDBObject("source_id", sourceID).append(
+		BasicDBObject dbObj = new BasicDBObject("source", source).append(
 				"url", url);
 		return coll.findOne(dbObj) != null;
 	}
 
-	public void addUrl(String sourceID, String url) {
+	public void addUrl(String source, String url) {
 		DBCollection coll = db.getCollection("_url");
-		BasicDBObject dbObj = new BasicDBObject("source_id", sourceID).append(
+		BasicDBObject dbObj = new BasicDBObject("source", source).append(
 				"url", url);
 		coll.save(dbObj);
 	}
 
-	public void clearUrl(String sourceID) {
+	public void clearUrl(String source) {
 		DBCollection coll = db.getCollection("_url");
-		coll.remove(new BasicDBObject("source_id", sourceID));
+		coll.remove(new BasicDBObject("source", source));
 	}
 
 	public boolean existsNews(WiNews news) {

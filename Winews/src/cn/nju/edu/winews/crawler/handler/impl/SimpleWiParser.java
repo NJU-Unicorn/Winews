@@ -1,4 +1,4 @@
-package cn.nju.edu.winews.crawler.handler.parser;
+package cn.nju.edu.winews.crawler.handler.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -14,11 +14,10 @@ import cn.nju.edu.winews.crawler.data.PropertiesHelper;
 import cn.nju.edu.winews.crawler.data.exception.ConfigIOException;
 import cn.nju.edu.winews.crawler.entity.WiNews;
 import cn.nju.edu.winews.crawler.entity.WiNewsPicture;
-import cn.nju.edu.winews.crawler.handler.SimpleWiHandler;
 import cn.nju.edu.winews.crawler.handler.exception.ConfigException;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
 
-public class SimpleWiParser implements WiParser {
+public class SimpleWiParser {
 	public static final String SOURCE_NAME_KEY = "source_name";
 	public static final String TITLE_SELECTOR_KEY = "title_selector";
 	public static final String SUBTITLE_SELECTOR_KEY = "subtitle_selector";
@@ -192,7 +191,7 @@ public class SimpleWiParser implements WiParser {
 	}
 
 	public static void main(String[] args) throws MalformedURLException {
-		WiParser p = new SimpleWiParser("北京日报");
+		SimpleWiParser p = new SimpleWiParser("北京日报");
 		WiNews news = p.parse(new URL(
 				"http://bjrb.bjd.com.cn/html/2015-02/02/content_254429.htm"));
 		System.out.println(news);
