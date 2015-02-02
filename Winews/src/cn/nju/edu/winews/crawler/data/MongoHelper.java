@@ -62,17 +62,17 @@ public class MongoHelper {
 	}
 
 	public boolean existsNews(WiNews news) {
-		DBCollection coll = db.getCollection(news.getSourceID());
+		DBCollection coll = db.getCollection(news.getSource());
 		BasicDBObject dbObj = new BasicDBObject("url", news.getUrl().toString());
 		return coll.findOne(dbObj) != null;
 	}
 
 	public synchronized void addNews(WiNews news) throws MongoIOException {
-		DBCollection coll = db.getCollection(news.getSourceID());
+		DBCollection coll = db.getCollection(news.getSource());
 		// if there is no reference Collection
-		if (!db.getCollectionNames().contains(news.getSourceID())) {
-			db.createCollection(news.getSourceID(), new BasicDBObject());
-			coll = db.getCollection(news.getSourceID());
+		if (!db.getCollectionNames().contains(news.getSource())) {
+			db.createCollection(news.getSource(), new BasicDBObject());
+			coll = db.getCollection(news.getSource());
 			coll.createIndex(new BasicDBObject("url", 1), new BasicDBObject(
 					"unique", true).append("name", "url"));
 		}
@@ -93,7 +93,6 @@ public class MongoHelper {
 	// news.setDate(o.get("date").toString());
 	// news.setLayout(o.get("layout").toString());
 	// news.setSource(o.get("source").toString());
-	// news.setSourceID(o.get("source_id").toString());
 	// news.setSubTitle(o.get("sub_title").toString());
 	// news.setUrl(new URL(o.get("url").toString()));
 	// for (Object listObj : ((BasicDBList) o.get("pictures"))) {
@@ -112,7 +111,6 @@ public class MongoHelper {
 		o.put("url", news.getUrl().toString());
 		o.put("date", news.getDate());
 		o.put("layout", news.getLayout());
-		o.put("source_id", news.getSourceID());
 		o.put("source", news.getSource());
 		o.put("title", news.getTitle());
 		o.put("sub_title", news.getSubTitle());

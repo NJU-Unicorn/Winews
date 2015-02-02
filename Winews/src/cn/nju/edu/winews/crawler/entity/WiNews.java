@@ -8,7 +8,6 @@ public class WiNews {
 	private String title;
 	private String subTitle;
 	private String source;
-	private String sourceID;
 	private String date;
 	private String layout;
 	private String content = "";
@@ -148,21 +147,6 @@ public class WiNews {
 	 */
 	public void addPicture(WiNewsPicture picture) {
 		pictures.add(picture);
-	}
-
-	/**
-	 * @return the sourceID
-	 */
-	public String getSourceID() {
-		return sourceID;
-	}
-
-	/**
-	 * @param sourceID
-	 *            the sourceID to set
-	 */
-	public void setSourceID(String sourceID) {
-		this.sourceID = sourceID;
 	}
 
 	public String toString() {

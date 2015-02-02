@@ -14,10 +14,9 @@ import cn.nju.edu.winews.crawler.data.PropertiesHelper;
 import cn.nju.edu.winews.crawler.data.exception.ConfigIOException;
 import cn.nju.edu.winews.crawler.entity.WiNews;
 import cn.nju.edu.winews.crawler.entity.WiNewsPicture;
-import cn.nju.edu.winews.crawler.handler.WiHandler;
+import cn.nju.edu.winews.crawler.handler.SimpleWiHandler;
 import cn.nju.edu.winews.crawler.handler.exception.ConfigException;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
-import cn.nju.edu.winews.crawler.handler.parser.impl.CommonParser;
 
 public class SimpleWiParser implements WiParser {
 	public static final String SOURCE_NAME_KEY = "source_name";
@@ -64,7 +63,6 @@ public class SimpleWiParser implements WiParser {
 		}
 		WiNews news = new WiNews();
 		news.setUrl(url);
-		news.setSourceID(sourceID);
 		news.setSource(source);
 		news.setTitle(doc.select(titleSelector).first().text().trim());
 		String subTitle = "";
@@ -73,9 +71,6 @@ public class SimpleWiParser implements WiParser {
 		}
 		news.setSubTitle(subTitle.trim().replace(news.getTitle(), " "));
 		news.setLayout(doc.select(layoutSelector).text().trim());
-		String dateStr = CommonParser.getDateFromLink(datePattern, dateFormat,
-				url.toString()).toString();
-		news.setDate(CommonParser.formatDate("yyyy-MM-dd", dateStr));
 		for (Element e : doc.select(contentSelector)) {
 			if (!e.getElementsByTag("br").isEmpty()) {
 				String raw = e.html();
@@ -164,8 +159,8 @@ public class SimpleWiParser implements WiParser {
 			throw new ConfigException(e.getMessage());
 		}
 		timeoutMillis = Integer.parseInt(conf.getProperty(
-				WiHandler.TIMEOUT_MILLIS_KEY, ""
-						+ WiHandler.DEFAULT_TIMEOUT_MILLIS));
+				SimpleWiHandler.TIMEOUT_MILLIS_KEY, ""
+						+ SimpleWiHandler.DEFAULT_TIMEOUT_MILLIS));
 		source = conf.getProperty(SimpleWiParser.SOURCE_NAME_KEY,
 				SimpleWiParser.UNKNOWN_VALUE);
 		titleSelector = conf.getProperty(SimpleWiParser.TITLE_SELECTOR_KEY,
@@ -197,9 +192,9 @@ public class SimpleWiParser implements WiParser {
 	}
 
 	public static void main(String[] args) throws MalformedURLException {
-		WiParser p = new SimpleWiParser("guizhourb");
+		WiParser p = new SimpleWiParser("北京日报");
 		WiNews news = p.parse(new URL(
-				"http://58.42.249.98/epaper/gzrb/Content/20141221/Articel01001WD.htm"));
+				"http://bjrb.bjd.com.cn/html/2015-02/02/content_254429.htm"));
 		System.out.println(news);
 	}
 }
