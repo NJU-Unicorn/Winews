@@ -35,6 +35,9 @@ public class WiUrlFilter {
 							u = u.replaceAll("^\\./", "");
 							u = baseUri.split("\\?")[0].replaceAll(replacement
 									+ "$", u);
+							if(!u.contains("&")&&!u.contains("id")) {
+								u = u.split("\\?")[0];
+							}
 						}
 						try {
 							url = new URL(u);
