@@ -34,12 +34,14 @@ public class WiDate extends GregorianCalendar {
 		return this.get(GregorianCalendar.DAY_OF_MONTH);
 	}
 	
-	public void toLastDay() {
+	public WiDate toLastDay() {
 		this.add(GregorianCalendar.DAY_OF_MONTH, -1);
+		return this;
 	}
 	
-	public void toNextDay() {
+	public WiDate toNextDay() {
 		this.add(GregorianCalendar.DAY_OF_MONTH, 1);
+		return this;
 	}
 
 	public String toString() {

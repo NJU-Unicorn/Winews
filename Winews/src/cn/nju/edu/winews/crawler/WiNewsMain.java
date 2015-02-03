@@ -13,7 +13,7 @@ public class WiNewsMain {
 			handler.start(new WiDate(Integer.parseInt(args[1]), Integer
 					.parseInt(args[2]), Integer.parseInt(args[3])));
 		} else {
-			handler.start(new WiDate(new Date()));
+			handler.start(new WiDate(new Date()).toLastDay());
 		}
 	}
 }
