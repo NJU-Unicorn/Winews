@@ -19,6 +19,7 @@ public class WiConvertor {
 		news.setDate(new WiDate(o.get("date").toString(),"yyyy-MM-dd"));
 		news.setLayout(o.get("layout").toString());
 		news.setSource(o.get("source").toString());
+		news.setTitle(o.get("title").toString());
 		news.setSubTitle(o.get("sub_title").toString());
 		news.setUrl(new URL(o.get("url").toString()));
 		for (Object listObj : ((BasicDBList) o.get("pictures"))) {
