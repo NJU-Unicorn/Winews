@@ -10,12 +10,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import cn.nju.edu.winews.crawler.data.PropertiesHelper;
 import cn.nju.edu.winews.crawler.data.exception.ConfigIOException;
 import cn.nju.edu.winews.crawler.entity.WiNews;
 import cn.nju.edu.winews.crawler.entity.WiNewsPicture;
 import cn.nju.edu.winews.crawler.handler.exception.ConfigException;
 import cn.nju.edu.winews.crawler.handler.exception.ParserException;
+import cn.nju.edu.winews.data.PropertiesHelper;
 
 public class SimpleWiParser {
 	public static final String SOURCE_NAME_KEY = "source_name";
@@ -85,7 +85,8 @@ public class SimpleWiParser {
 				String[] lines = newDoc.text().split("\\[BREnter\\]");
 				for (int i = 0; i < lines.length; i++) {
 					String line = lines[i].trim().replaceAll("^( |　)*", "")
-							.replaceAll("( |　)*$", "").replace("　　", "\n").trim()
+							.replaceAll("( |　)*$", "").replace("　　", "\n")
+							.trim()
 							+ "\n";
 					if (line.length() > 1) {
 						news.appendContent(line);
@@ -112,7 +113,8 @@ public class SimpleWiParser {
 			} catch (MalformedURLException e2) {
 				String picAbsUrl;
 				if (picRelUrl.startsWith("/")) {
-					picAbsUrl = url.getProtocol()+"://" + url.getHost() +picRelUrl;
+					picAbsUrl = url.getProtocol() + "://" + url.getHost()
+							+ picRelUrl;
 				} else {
 					String[] urlSp = url.toString().split("/");
 					String rootUrl = url.toString().replace(
@@ -135,10 +137,11 @@ public class SimpleWiParser {
 			}
 			pic.setComment(e.text().trim().replaceAll("^ *", "")
 					.replaceAll(" *$", ""));
-			if(pic.getComment().equals("")) {
-				pic.setComment(e.getElementsByAttribute("data-title").attr("data-title"));
+			if (pic.getComment().equals("")) {
+				pic.setComment(e.getElementsByAttribute("data-title").attr(
+						"data-title"));
 			}
-			if(pic.getComment().equals("")) {
+			if (pic.getComment().equals("")) {
 				pic.setComment(e.getElementsByAttribute("title").attr("title"));
 			}
 			System.out.println("Picture Link: " + pic.getUrl() + "("

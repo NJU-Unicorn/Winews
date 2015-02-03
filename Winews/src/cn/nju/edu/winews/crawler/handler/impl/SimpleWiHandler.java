@@ -14,13 +14,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import cn.nju.edu.winews.crawler.data.MongoHelper;
-import cn.nju.edu.winews.crawler.data.PropertiesHelper;
 import cn.nju.edu.winews.crawler.data.exception.ConfigIOException;
 import cn.nju.edu.winews.crawler.entity.WiDate;
 import cn.nju.edu.winews.crawler.entity.WiNews;
 import cn.nju.edu.winews.crawler.handler.WiHandler;
 import cn.nju.edu.winews.crawler.handler.exception.ConfigException;
+import cn.nju.edu.winews.data.MongoHelper;
+import cn.nju.edu.winews.data.PropertiesHelper;
 
 public class SimpleWiHandler implements WiHandler {
 	public static final String TIMEOUT_MILLIS_KEY = "timeout";
@@ -147,8 +147,7 @@ public class SimpleWiHandler implements WiHandler {
 							SimpleWiParser parser = ParserFactory
 									.createSimpleParser(sourceName);
 							news = parser.parse(link);
-							news.setDate(formatDate("yyyy-MM-dd",
-									curDate.toString()));
+							news.setDate(curDate);
 							if (news.getLayout().equals("")) {
 								news.setLayout(doc.select("#banzhibar>div")
 										.first().text().trim());
@@ -164,17 +163,6 @@ public class SimpleWiHandler implements WiHandler {
 					}
 				}
 			}
-		}
-	}
-
-	private String formatDate(String oldPattern, String date) {
-		SimpleDateFormat sdf = new SimpleDateFormat(oldPattern);
-		try {
-			Date d = sdf.parse(date);
-			sdf = new SimpleDateFormat("yyyy年MM月dd日 E");
-			return sdf.format(d);
-		} catch (ParseException e) {
-			return date;
 		}
 	}
 

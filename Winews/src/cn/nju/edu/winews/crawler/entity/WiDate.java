@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WiDate extends GregorianCalendar {
 	private static final long serialVersionUID = 1L;
@@ -53,6 +55,34 @@ public class WiDate extends GregorianCalendar {
 		DateFormat df = new SimpleDateFormat(dateFormat);
 		String dateStr = df.format(this.getTime());
 		return s.replace("{{DATE}}", dateStr);
+	}
+	
+	public String getFormatDate(String format) {
+		DateFormat df = new SimpleDateFormat(format);
+		String dateStr = df.format(this.getTime());
+		return dateStr;
+	}
+	
+	public String convertWeekName(String cn) {
+		switch (cn) {
+		case "星期一":
+			return "Mon";
+		case "星期二":
+			return "Tue";
+		case "星期三":
+			return "Wed";
+		case "星期四":
+			return "Thu";
+		case "星期五":
+			return "Fri";
+		case "星期六":
+			return "Sat";
+		case "星期日":
+			return "Sun";
+		default:
+			System.out.println("无法转换星期: " + cn );
+			return cn;
+		}
 	}
 
 	public boolean equals(Object o) {

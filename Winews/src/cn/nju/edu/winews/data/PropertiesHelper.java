@@ -1,4 +1,4 @@
-package cn.nju.edu.winews.crawler.data;
+package cn.nju.edu.winews.data;
 
 import java.io.File;
 import java.io.FileInputStream;

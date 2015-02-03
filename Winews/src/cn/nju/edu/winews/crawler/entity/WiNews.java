@@ -8,7 +8,7 @@ public class WiNews {
 	private String title;
 	private String subTitle;
 	private String source;
-	private String date;
+	private WiDate date;
 	private String layout;
 	private String content = "";
 	private ArrayList<WiNewsPicture> pictures = new ArrayList<WiNewsPicture>();
@@ -76,7 +76,7 @@ public class WiNews {
 	/**
 	 * @return the date
 	 */
-	public String getDate() {
+	public WiDate getDate() {
 		return date;
 	}
 
@@ -84,7 +84,7 @@ public class WiNews {
 	 * @param date
 	 *            the date to set
 	 */
-	public void setDate(String date) {
+	public void setDate(WiDate date) {
 		this.date = date;
 	}
 
