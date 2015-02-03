@@ -8,6 +8,6 @@
 			<attribute name="javadoc_location" value="jar:file:/lib/mongo-java-driver-javadoc-2.12.5.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/git/Winews/Winews/lib/jna-4.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jna-4.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
